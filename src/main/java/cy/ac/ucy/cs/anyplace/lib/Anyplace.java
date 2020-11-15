@@ -120,7 +120,7 @@ public class Anyplace {
 	}
 
 	/**
-	 * Navigation instructions given from a given location to a POI
+	 * Navigation instructions given from a given location to a POI.
 	 * 
 	 * @param access_token   The users access token (api key)
 	 * @param pois_to        The target POI
