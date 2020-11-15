@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
 }
 
 group 'cy.ac.ucy.cs.anyplace.core'
@@ -14,13 +13,14 @@ repositories {
 
 dependencies {
     // core dependencies
-    compile group: 'org.json', name: 'json', version: '20180813'
-    compile 'com.squareup.okhttp3:okhttp:4.3.1'
-    compile 'com.squareup.okio:okio:2.4.1'
+    implementation group: 'org.json', name: 'json', version: '20180813'
+    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+    implementation 'com.squareup.okio:okio:2.4.1'
 
     // testing
     //testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'junit:junit:4.13'
+    testCompile ('org.junit.jupiter:junit-jupiter:5.6.0')
 
 }
 

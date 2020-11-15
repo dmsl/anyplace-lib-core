@@ -46,6 +46,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -100,7 +102,7 @@ public class Anyplace {
 	 * @return The response JSON as a String
 	 */
 	public String poiDetails(String access_token, String pois) {
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/navigation/pois/id");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -131,7 +133,7 @@ public class Anyplace {
 	public String navigationXY(String access_token, String pois_to, String buid, String floor, String coordinates_lat,
 			String coordinates_lon)  {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/navigation/route_xy");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -185,7 +187,7 @@ public class Anyplace {
 	 */
 	public String navigationPoiToPoi(String access_token, String pois_to, String pois_from)  {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/navigation/route");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -228,10 +230,11 @@ public class Anyplace {
          * @return The response JSON as a String
          */
 	public String buildingAll() {
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/building/all");
 
 		return JsonHelper.jsonResponse(STATUS_OK,client.doPost(null, getHost(), getPath()));
+
 	}
 
 	/**
@@ -242,7 +245,7 @@ public class Anyplace {
 	 */
 	public String buildingsByCampus(String cuid) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/campus/all_cucode");
 		Map<String, String> params = new HashMap<>();
 		params.put("cuid", cuid);
@@ -257,7 +260,7 @@ public class Anyplace {
 	 * @return JSON String response
 	 */
 	public String buildingsByBuildingCode(String bucode) {
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/building/all_bucode");
 		Map<String, String> params = new HashMap<>();
 		params.put("bucode", bucode);
@@ -274,7 +277,7 @@ public class Anyplace {
 	 */
 	public String nearbyBuildings(String access_token, String coordinates_lat, String coordinates_lon) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/building/coordinates");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -304,13 +307,28 @@ public class Anyplace {
 	 */
 	public String allBuildingFloors(String buid) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/floor/all");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
 
 
 		return JsonHelper.jsonResponse(STATUS_OK,client.doPost(params, getHost(), getPath()));
+	}
+
+	/**
+	 * Upload RSS log
+	 *
+	 * @param access_token Your access token
+	 * @return A JSON String containing all the floors of the building
+	 */
+	public String uploadRssLog(String access_token, String rsslog) {
+
+		File file = new File(rsslog);
+		RestClient client = new RestClient();
+		setPath("/anyplace/position/radio_upload");
+		String response =client.uploadFile( getHost(), getPath(), file, access_token );
+		return JsonHelper.jsonResponse(response !=null? STATUS_OK: STATUS_ERR, response != null? response: "{\"message\":\"ERROR in Uploading RSS log\"}");
 	}
 
 	/**
@@ -321,7 +339,7 @@ public class Anyplace {
 	 */
 	public String allBuildingPOIs(String buid) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/pois/all_building");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
@@ -337,7 +355,7 @@ public class Anyplace {
 	 */
 	public String allBuildingFloorPOIs(String buid, String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/pois/all_floor");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
@@ -357,7 +375,7 @@ public class Anyplace {
 	 */
 	public String connectionsByFloor(String buid, String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/mapping/connection/all_floor");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
@@ -376,7 +394,7 @@ public class Anyplace {
 	 */
 	public String radioheatMapBuildingFloor(String buid, String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
 		params.put("floor", floor);
@@ -387,11 +405,43 @@ public class Anyplace {
 
 
 	}
+	/**
+	 * Download the floor plan in base64 png format. It also stores the file locally
+	 * as a png file
+	 *
+	 * @param access_token The access token(api key)
+	 * @param buid         The building ID
+	 * @param floor        The floor number
+	 * @return JSON String containing the floor plan in a base64 format
+	 */
+	public String floorplans(String access_token, String buid, String floor, File f) {
+		OutputStream output = null;
+		RestClient client = new RestClient();
+		setPath("/anyplace/floorplans64/" + buid + "/" + floor);
+		Map<String, String> params = new HashMap<>();
+		params.put("access_token", access_token);
+		params.put("buid", buid);
+		params.put("floor", floor);
+
+		String response = client.doPost(params, getHost(), getPath());
+
+
+
+		try {
+			output = new FileOutputStream(f);
+			output.write(response.getBytes());
+			output.close();
+		} catch (Exception e) {
+			return JsonHelper.printError(e, "floorplans");
+		}
+
+		return response;
+	}
 
 	/**
 	 * Download the floor plan in base64 png format. It also stores the file locally
 	 * as a png file
-	 * 
+	 *
 	 * @param access_token The access token(api key)
 	 * @param buid         The building ID
 	 * @param floor        The floor number
@@ -399,7 +449,7 @@ public class Anyplace {
 	 */
 	public String floorplans64(String access_token, String buid, String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/floorplans64/" + buid + "/" + floor);
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -442,7 +492,7 @@ public class Anyplace {
 	 */
 	public String floortiles(String access_token, String buid, String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/floortiles/" + buid + "/" + floor);
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -489,6 +539,52 @@ public class Anyplace {
 	/**
 	 * Download the floor plan tiles in a zip file
 	 *
+	 * @param access_token The access token(api key)
+	 * @param buid         The building ID
+	 * @param floor        The floor number
+	 * @return JSON String containing the floor tile zip download url
+	 */
+	public byte[] floortilesByte(String access_token, String buid, String floor) {
+
+		RestClient client = new RestClient();
+		setPath("/anyplace/floortiles/" + buid + "/" + floor);
+		Map<String, String> params = new HashMap<>();
+		params.put("access_token", access_token);
+		params.put("buid", buid);
+		params.put("floor", floor);
+
+		String response = client.doPost(params, getHost(), getPath());
+
+		JSONObject obj;
+		int statusCode;
+		try {
+			obj = new JSONObject(response);
+			statusCode = obj.getInt("status_code");
+		} catch (JSONException e) {
+			return null;
+		}
+
+		if (statusCode == 200) {
+			String tiles_archive;
+			try {
+				tiles_archive = obj.getString("tiles_archive");
+			} catch (JSONException e) {
+				return null;
+			}
+			byte[] zip = client.getFileWithGet(getHost(), tiles_archive);
+			return zip;
+
+
+		} else {
+			System.out.println("Bad response floortiles");
+		}
+
+		return null;
+	}
+
+	/**
+	 * Download the floor plan tiles in a zip file
+	 *
 	 * @param buid         The building ID
 	 * @param floor        The floor number
 	 * @return JSON String containing the floor tile zip download url
@@ -509,7 +605,7 @@ public class Anyplace {
 	public String radioByCoordinatesFloor(String access_token, String coordinates_lat, String coordinates_lon,
 			String floor) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/position/radio_download_floor");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -548,7 +644,7 @@ public class Anyplace {
 	public String radioByBuildingFloorRange(String buid, String floor, String coordinates_lat, String coordinates_lon,
 			String range) {
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/position/radio_by_floor_bbox");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);
@@ -571,7 +667,7 @@ public class Anyplace {
 	 */
 	public String radioByBuildingFloor(String access_token, String buid, String floor){
 
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new cy.ac.ucy.cs.anyplace.lib.RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/position/radio_by_building_floor");
 		Map<String, String> params = new HashMap<>();
 		params.put("access_token", access_token);
@@ -668,6 +764,59 @@ public class Anyplace {
 	 * Radiomap using all the entries of an entire floor of a building. The
 	 * measurements are also stored locally for use by estimatePositionOffline
 	 *
+	 * @param access_token The access token(api key)
+	 * @param buid         The building ID
+	 * @param floor        The floor number
+	 * @return JSON String with the radio measurement of the floor
+	 */
+	public String radiomapMeanByBuildingFloor(String access_token, String buid, String floor){
+
+		RestClient client = new RestClient();
+		String res = "Error";
+		setPath("/anyplace/position/radio_by_building_floor");
+		Map<String, String> params = new HashMap<>();
+		params.put("access_token", access_token);
+		params.put("buid", buid);
+		params.put("floor", floor);
+
+		String response = client.doPost(params, getHost(), getPath());
+
+		JSONObject obj;
+		int statusCode;
+		try {
+			obj = new JSONObject(response);
+			statusCode = obj.getInt("status_code");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+
+		if (statusCode == 200) {
+
+
+			String map_url_mean ;
+			try {
+				map_url_mean = obj.getString("map_url_mean");
+			} catch (JSONException e) {
+				return JsonHelper.printError(e, "radioByBuildingFloor");
+			}
+			byte[] mean = client.getFileWithPost(getHost(), map_url_mean);
+			res = new String(mean);
+
+
+		}
+
+		else {
+			System.out.println("Bad response");
+		}
+
+		return res;
+
+	}
+
+	/**
+	 * Radiomap using all the entries of an entire floor of a building. The
+	 * measurements are also stored locally for use by estimatePositionOffline
+	 *
 	 * @param buid         The building ID
 	 * @param floor        The floor number
 	 * @return JSON String with the radio measurement of the floor
@@ -687,7 +836,7 @@ public class Anyplace {
 	 * @return JSON String containing the lat and lon
 	 */
 	public String estimatePosition(String buid, String floor, String[] aps, String algorithm)  {
-		cy.ac.ucy.cs.anyplace.lib.RestClient client = new RestClient();
+		RestClient client = new RestClient();
 		setPath("/anyplace/position/estimate_position");
 		Map<String, String> params = new HashMap<>();
 		params.put("buid", buid);

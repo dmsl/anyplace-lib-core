@@ -39,9 +39,11 @@
 package cy.ac.ucy.cs.anyplace.lib;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.http.RealResponseBody;
 import okio.GzipSource;
@@ -50,7 +52,14 @@ import okio.Okio;
 public class UnzippingInterceptor implements Interceptor {
 	@Override
 	public Response intercept(Chain chain) throws IOException {
+
+
+
 		Response response = chain.proceed(chain.request());
+
+
+
+
 		return unzip(response);
 
 	}

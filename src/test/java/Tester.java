@@ -1,13 +1,10 @@
 
 import cy.ac.ucy.cs.anyplace.lib.Anyplace;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(NoConfigTests.class)
+@Category(Buildtests.class)
 public class Tester {
     static String response;
     static String buid;
@@ -38,10 +35,6 @@ public class Tester {
         aps = new String[]{"{\"bssid\":\"d4:d7:48:d8:28:b0\",\"rss\":-40}", "{\"bssid\":\"00:0e:38:7a:37:77\",\"rss\":-50}"};
     }
 
-    @Before
-    public void setUp() throws Exception {
-        // Code executed before each test
-    }
 
     @Test
     public void testPoiDetails(){
@@ -102,6 +95,15 @@ public class Tester {
     }
 
     @Test
+    public void testUploadRSSLog() {
+        Anyplace client = new Anyplace("ap.cs.ucy.ac.cy", "443", "res/");
+
+        String file = System.getProperty("user.home") + "/Desktop/indoor_radiomap_mean.txt";
+        response = client.uploadRssLog(access_token, file);
+        //System.out.println(response/* .substring(0, 100) */ + "\n");
+    }
+
+    @Test
     public void testNavigationXY() {
         Anyplace client = new Anyplace("ap.cs.ucy.ac.cy", "443", "res/");
 
@@ -114,7 +116,7 @@ public class Tester {
     public void testRadioByCoordinatesFloor() {
         Anyplace client = new Anyplace("ap.cs.ucy.ac.cy", "443", "res/");
 
-        //response = client.radioByCoordinatesFloor(access_token, coordinates_la, coordinates_lo, floor);
+        response = client.radioByCoordinatesFloor(access_token, coordinates_la, coordinates_lo, floor);
         //System.out.println(response + "\n");
     }
 
@@ -186,20 +188,6 @@ public class Tester {
         //System.out.println(response);
 
     }
-
-
-
-
-
-
-
-
-
-    @After
-    public void tearDown() throws Exception {
-        // Code executed after each test
-    }
-
 
 
 }

@@ -38,16 +38,13 @@
 
 package cy.ac.ucy.cs.anyplace.lib;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
 /*
  * This class makes the requests to the server using HTTP POST
@@ -67,20 +64,60 @@ public class RestClient {
 
 		String query = makeRequestBody(map);
 
-		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().addInterceptor(new UnzippingInterceptor());
-		OkHttpClient client = clientBuilder.
-            readTimeout(Preferences.READ_TIMEOUT_SECS, TimeUnit.SECONDS).
-            connectTimeout(Preferences.CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS).
-            build();
+		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().addInterceptor
+				(new UnzippingInterceptor());
+		OkHttpClient client = clientBuilder.readTimeout
+				(Preferences.READ_TIMEOUT_SECS, TimeUnit.SECONDS).
+            connectTimeout(Preferences.CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS).build();
 
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(mediaType, query);
 		Request request = new Request.Builder().url("https://" + host + path).post(body)
-				.addHeader("Content-Type", "application/json").addHeader("Accept", "*/*")
-				.addHeader("Cache-Control", "no-cache").addHeader("Host", host)
-				.addHeader("Accept-Encoding", "application/json").addHeader("Content-Length", "45")
-				.addHeader("Connection", "keep-alive").addHeader("cache-control", "no-cache").build();
+				.addHeader("Content-Type", "application/json")
+				.addHeader("Accept", "*/*")
+				.addHeader("Cache-Control", "no-cache")
+				.addHeader("Host", host)
+				.addHeader("Accept-Encoding", "application/json")
+				.addHeader("Content-Length", "45")
+				.addHeader("Connection", "keep-alive")
+				.addHeader("cache-control", "no-cache").build();
 
+
+
+		try {
+
+			Response response = client.newCall(request).execute();
+
+
+			return response.body().string();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public String doPostUpload(String access_token, String host, String path, String file) {
+
+		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().addInterceptor(new UnzippingInterceptor());
+		OkHttpClient client = clientBuilder.
+				readTimeout(Preferences.READ_TIMEOUT_SECS, TimeUnit.SECONDS).
+				connectTimeout(Preferences.CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS).
+				build();
+
+		MediaType mediaType = MediaType.parse("multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+		RequestBody body = RequestBody.create(mediaType, "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"json\"\r\n\r\n{\"access_token\":\"" + access_token +"\"}\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"radiomap\"; filename=\""+file+"\"\r\nContent-Type: application/octet-stream\r\n\r\n\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--");
+		Request request = new Request.Builder()
+				.url("https://" + host + path).post(body)
+				.addHeader("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
+				.addHeader("Content-Type", "multipart/form-data")
+				.addHeader("Accept", "*/*")
+				.addHeader("Cache-Control", "no-cache")
+				.addHeader("Host", host)
+				.addHeader("Accept-Encoding", "gzip, deflate")
+				.addHeader("Content-Length", "993541")
+				.addHeader("Connection", "keep-alive")
+				.addHeader("cache-control", "no-cache").build();
 		try {
 			Response response = client.newCall(request).execute();
 
@@ -90,6 +127,40 @@ public class RestClient {
 			e.printStackTrace();
 			return null;
 		}
+
+	}
+
+	public  String uploadFile(String host, String path, File file, String access_token ) {
+
+		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().addInterceptor(new UnzippingInterceptor());
+		OkHttpClient client = clientBuilder.
+				readTimeout(Preferences.READ_TIMEOUT_SECS, TimeUnit.SECONDS).
+				connectTimeout(Preferences.CONNECT_TIMEOUT_SECS, TimeUnit.SECONDS).
+				build();
+
+			RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+					.addFormDataPart("access_token", access_token)
+					.addFormDataPart("radiomap", file.getName(),
+							RequestBody.create(MediaType.parse("application/octet-stream"), file))
+					.build();
+
+			Request request = new Request.Builder()
+					.url("https://" + host + path)
+					.post(requestBody)
+					.build();
+
+
+		try {
+			Response response = client.newCall(request).execute();
+
+			return response.body().string();
+
+
+		} catch (Exception ex) {
+			// Handle the error
+			return null;
+		}
+
 	}
 
 	/**
