@@ -1,11 +1,12 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+    id 'publishing'
 }
 
 group 'cy.ac.ucy.cs.anyplace.core'
-version '0.1'
+version '1.0'
 
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -26,22 +27,22 @@ dependencies {
 
 // JAR library generation
 jar { manifest {
-    attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
+//    attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
 }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     tasks.withType(Jar) {
         //        destinationDirectory = file("$rootDir/../bin/")
         destinationDirectory = file("$rootDir/../bin/")
-        archiveFileName = "Anyplace.jar"
+        archiveFileName = "anyplace-core.jar"
     }
 }
 
 // Run cli task
-task run_cli(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "cy.ac.ucy.cs.anyplace.core.CLI"
-    args "arg1", "arg2"
-}
+//task run_cli(type: JavaExec) {
+//    classpath sourceSets.main.runtimeClasspath
+//    main = "cy.ac.ucy.cs.anyplace.core.CLI"
+//    args "arg1", "arg2"
+//}
 test {
     useJUnit(){
         includeCategories 'Buildtests'
