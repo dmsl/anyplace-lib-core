@@ -5,11 +5,45 @@ plugins {
 }
 
 group 'cy.ac.ucy.cs.anyplace.core'
-version '1.0'
+version '0.1'
 
 
 repositories {
     mavenCentral()
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.dmsl'
+            artifactId = 'anyplace-core'
+            version = '0.1'
+            from components.java
+        }
+
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'Anyplace core library'
+                description = 'A java library for the Anyplace 4.0 API'
+                url = 'https://github.com/dmsl/anyplace-lib-core'
+                licenses {
+                    license {
+                        name = 'MIT Licence'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'cachil01'
+                        name = 'Christakis Achilleos'
+                        email = 'cachil01@cs.ucy.ac.cy'
+                    }
+                }
+            }
+        }
+
+
+    }
+
 }
 
 dependencies {
@@ -32,7 +66,7 @@ jar { manifest {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     tasks.withType(Jar) {
         //        destinationDirectory = file("$rootDir/../bin/")
-        destinationDirectory = file("$rootDir/artifact/")
+        destinationDirectory = file("$rootDir/build/libs/")
         archiveFileName = "anyplace-core.jar"
     }
 }
