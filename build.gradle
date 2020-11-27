@@ -66,8 +66,7 @@ jar { manifest {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     tasks.withType(Jar) {
         //        destinationDirectory = file("$rootDir/../bin/")
-//        destinationDirectory = file("$rootDir/artifact/")
-        destinationDir = file("$rootDir/artifact/")
+        destinationDirectory = file("$rootDir/artifact/")
         archiveFileName = "anyplace-core.jar"
     }
 }
