@@ -331,6 +331,8 @@ public class Anyplace {
 		return JsonHelper.jsonResponse(response !=null? STATUS_OK: STATUS_ERR, response != null? response: "{\"message\":\"ERROR in Uploading RSS log\"}");
 	}
 
+
+
 	/**
 	 * Get all POIs inside of a building
 	 * 

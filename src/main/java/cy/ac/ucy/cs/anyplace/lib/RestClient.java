@@ -142,12 +142,14 @@ public class RestClient {
 					.addFormDataPart("access_token", access_token)
 					.addFormDataPart("radiomap", file.getName(),
 							RequestBody.create(MediaType.parse("application/octet-stream"), file))
+					.addFormDataPart("json","{}")
 					.build();
 
 			Request request = new Request.Builder()
 					.url("https://" + host + path)
 					.post(requestBody)
 					.build();
+
 
 
 		try {
@@ -162,6 +164,9 @@ public class RestClient {
 		}
 
 	}
+
+
+
 
 	/**
 	 * @param host The name of the server
