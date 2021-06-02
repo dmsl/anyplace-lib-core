@@ -532,7 +532,9 @@ public class Anyplace {
 			}
 
 		} else {
-			System.out.println("Bad response");
+			System.out.println("Bad response: " + statusCode);
+      System.out.println(response);
+			return response;
 		}
 
 		return JsonHelper.jsonResponse(STATUS_OK, response);
@@ -753,9 +755,10 @@ public class Anyplace {
 			}
 
 		}
-
 		else {
-			System.out.println("Bad response");
+      System.out.println("Bad response: " + statusCode);
+      System.out.println(response);
+      return response;
 		}
 
 		return JsonHelper.jsonResponse(STATUS_OK, response);
@@ -793,8 +796,6 @@ public class Anyplace {
 		}
 
 		if (statusCode == 200) {
-
-
 			String map_url_mean ;
 			try {
 				map_url_mean = obj.getString("map_url_mean");
@@ -803,16 +804,13 @@ public class Anyplace {
 			}
 			byte[] mean = client.getFileWithPost(getHost(), map_url_mean);
 			res = new String(mean);
-
-
 		}
-
 		else {
-			System.out.println("Bad response");
+      System.out.println(response);
+      return response;
 		}
 
 		return res;
-
 	}
 
 	/**

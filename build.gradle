@@ -11,52 +11,50 @@ version '0.1'
 repositories {
     mavenCentral()
 }
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'com.github.dmsl'
-            artifactId = 'anyplace-core'
-            version = '0.1'
-            from components.java
-        }
+// CLR:PM: Probably this is not needed.
+// publishing {
+//     publications {
+//         maven(MavenPublication) {
+//             groupId = 'com.github.dmsl'
+//             artifactId = 'anyplace-core'
+//             version = '0.1'
+//             from components.java
+//         }
 
-        mavenJava(MavenPublication) {
-            pom {
-                name = 'Anyplace core library'
-                description = 'A java library for the Anyplace 4.0 API'
-                url = 'https://github.com/dmsl/anyplace-lib-core'
-                licenses {
-                    license {
-                        name = 'MIT Licence'
-                        url = 'https://opensource.org/licenses/MIT'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'cachil01'
-                        name = 'Christakis Achilleos'
-                        email = 'cachil01@cs.ucy.ac.cy'
-                    }
-                }
-            }
-        }
-
-
-    }
-
-}
+//         mavenJava(MavenPublication) {
+//             pom {
+//                 name = 'Anyplace core library'
+//                 description = 'A java library for the Anyplace 4.0 API'
+//                 url = 'https://github.com/dmsl/anyplace-lib-core'
+//                 licenses {
+//                     license {
+//                         name = 'MIT Licence'
+//                         url = 'https://opensource.org/licenses/MIT'
+//                     }
+//                 }
+//                 developers {
+//                     developer {
+//                         id = 'cachil01'
+//                         name = 'Christakis Achilleos'
+//                         email = 'cachil01@cs.ucy.ac.cy'
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 dependencies {
-    // core dependencies
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+
     implementation group: 'org.json', name: 'json', version: '20180813'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
     implementation 'com.squareup.okio:okio:2.4.1'
 
     // testing
     //testCompile group: 'junit', name: 'junit', version: '4.12'
-    testImplementation 'junit:junit:4.13'
-    testCompile ('org.junit.jupiter:junit-jupiter:5.6.0')
-
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation ('org.junit.jupiter:junit-jupiter:5.6.0')
 }
 
 // JAR library generation
@@ -91,4 +89,7 @@ test {
 }
 
 
-
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
