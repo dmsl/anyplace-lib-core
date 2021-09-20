@@ -1,15 +1,11 @@
-package cy.ac.ucy.cs.anyplace.lib;
+package cy.ac.ucy.cs.anyplace.lib.core;
 
 public class LogDebug {
-
     private static final String TAG = "android-core";
-    enum Level{
+    enum Level {
         ERR,
         WARN,
         DEBUG,
         DEBUG2
-    };
-
-
-
+    }
 }

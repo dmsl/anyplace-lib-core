@@ -34,7 +34,7 @@
 *
 */
 
-package cy.ac.ucy.cs.anyplace.lib;
+package cy.ac.ucy.cs.anyplace.lib.core;
 
 public class LogRecord {
 

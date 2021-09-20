@@ -1,69 +1,53 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    id 'publishing'
+    id 'kotlin'
+    id 'maven-publish'  // JITPACK
+    id 'kotlin-kapt'
+    // id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.0' Replace GSON?
 }
 
 group 'cy.ac.ucy.cs.anyplace.core'
 version '0.1'
 
-
 repositories {
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
-// CLR:PM: Probably this is not needed.
-// publishing {
-//     publications {
-//         maven(MavenPublication) {
-//             groupId = 'com.github.dmsl'
-//             artifactId = 'anyplace-core'
-//             version = '0.1'
-//             from components.java
-//         }
-
-//         mavenJava(MavenPublication) {
-//             pom {
-//                 name = 'Anyplace core library'
-//                 description = 'A java library for the Anyplace 4.0 API'
-//                 url = 'https://github.com/dmsl/anyplace-lib-core'
-//                 licenses {
-//                     license {
-//                         name = 'MIT Licence'
-//                         url = 'https://opensource.org/licenses/MIT'
-//                     }
-//                 }
-//                 developers {
-//                     developer {
-//                         id = 'cachil01'
-//                         name = 'Christakis Achilleos'
-//                         email = 'cachil01@cs.ucy.ac.cy'
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib:$ver_kotlin"
+    // implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1" Replace GSON?
 
-    implementation group: 'org.json', name: 'json', version: '20180813'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
-    implementation 'com.squareup.okio:okio:2.4.1'
+    implementation 'com.squareup.okio:okio:2.8.0'
+    implementation group: 'org.json', name: 'json', version: '20180813'
 
-    // testing
+    // Dependency Injection
+    implementation 'com.google.dagger:dagger:2.36'
+    kapt 'com.google.dagger:dagger-compiler:2.36'
+    implementation 'com.google.dagger:hilt-core:2.36'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // TESTING
     //testCompile group: 'junit', name: 'junit', version: '4.12'
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation ('org.junit.jupiter:junit-jupiter:5.6.0')
 }
 
 // JAR library generation
 jar { manifest {
-//    attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
+    attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
 }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+//    from {
+//        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
     tasks.withType(Jar) {
-        //        destinationDirectory = file("$rootDir/../bin/")
+//        destinationDirectory = file("$rootDir/../bin/")
         destinationDirectory = file("$rootDir/artifact/")
         archiveFileName = "anyplace-core.jar"
     }

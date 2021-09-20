@@ -34,7 +34,7 @@
 *
 */
 
-package cy.ac.ucy.cs.anyplace.lib;
+package cy.ac.ucy.cs.anyplace.lib.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,6 @@ import cy.ac.ucy.cs.anyplace.lib.core.LogRecord;
 import cy.ac.ucy.cs.anyplace.lib.core.RadioMap;
 
 public class Algorithms {
-
 	final static String K = "4";
 
 	/**
@@ -58,7 +57,6 @@ public class Algorithms {
 	 * @return the location of user
 	 */
 	public static String ProcessingAlgorithms(ArrayList<LogRecord> latestScanList, RadioMap RM, int algorithm_choice) {
-
 		int i, j;
 
 		ArrayList<String> MacAdressList = RM.getMacAdressList();
@@ -167,7 +165,6 @@ public class Algorithms {
 		}
 
 		return myLocation;
-
 	}
 
 	/**
@@ -232,7 +229,6 @@ public class Algorithms {
 	 * @return The Euclidean distance, or MIN_VALUE for error
 	 */
 	private static float calculateEuclideanDistance(ArrayList<String> l1, ArrayList<String> l2) {
-
 		float finalResult = 0;
 		float v1;
 		float v2;
@@ -240,7 +236,6 @@ public class Algorithms {
 		String str;
 
 		for (int i = 0; i < l1.size(); ++i) {
-
 			try {
 				str = l1.get(i);
 				v1 = Float.valueOf(str.trim()).floatValue();
@@ -270,7 +265,6 @@ public class Algorithms {
 	 * @return The Probability for this location, or MIN_VALUE for error
 	 */
 	public static double calculateProbability(ArrayList<String> l1, ArrayList<String> l2, float sGreek) {
-
 		double finalResult = 1;
 		float v1;
 		float v2;
@@ -278,7 +272,6 @@ public class Algorithms {
 		String str;
 
 		for (int i = 0; i < l1.size(); ++i) {
-
 			try {
 				str = l1.get(i);
 				v1 = Float.valueOf(str.trim()).floatValue();
@@ -312,13 +305,9 @@ public class Algorithms {
 	 * @return The estimated user location, or null for error
 	 */
 	private static String calculateAverageKDistanceLocations(ArrayList<LocDistance> LocDistance_Results_List, int K) {
-
-		double sumX = 0.0f;
-		double sumY = 0.0f;
-
+		double sumX = 0.0f, sumY = 0.0f;
 		String[] LocationArray = new String[2];
 		double x, y;
-
 		int K_Min = K < LocDistance_Results_List.size() ? K : LocDistance_Results_List.size();
 
 		// Calculate the sum of X and Y
@@ -352,9 +341,8 @@ public class Algorithms {
 	 * @param K                        The number of locations used
 	 * @return The estimated user location, or null for error
 	 */
-	public static String calculateWeightedAverageKDistanceLocations(ArrayList<LocDistance> LocDistance_Results_List,
-			int K) {
-
+	public static String calculateWeightedAverageKDistanceLocations(
+			ArrayList<LocDistance> LocDistance_Results_List, int K) {
 		double LocationWeight = 0.0f;
 		double sumWeights = 0.0f;
 		double WeightedSumX = 0.0f;
@@ -401,8 +389,8 @@ public class Algorithms {
 	 * 
 	 * @return The estimated user location, or null for error
 	 */
-	public static String calculateWeightedAverageProbabilityLocations(ArrayList<LocDistance> LocDistance_Results_List) {
-
+	public static String calculateWeightedAverageProbabilityLocations(
+			ArrayList<LocDistance> LocDistance_Results_List) {
 		double sumProbabilities = 0.0f;
 		double WeightedSumX = 0.0f;
 		double WeightedSumY = 0.0f;
@@ -433,11 +421,9 @@ public class Algorithms {
 		}
 
 		return WeightedSumX + " " + WeightedSumY;
-
 	}
 
 	private static String readParameter(RadioMap RM, int algorithm_choice) {
-
 		String parameter = null;
 
 		if (algorithm_choice == 0) {
@@ -458,5 +444,4 @@ public class Algorithms {
 
 		return parameter;
 	}
-
 }

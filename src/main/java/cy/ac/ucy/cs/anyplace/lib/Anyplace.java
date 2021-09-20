@@ -35,870 +35,962 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
-package cy.ac.ucy.cs.anyplace.lib
 
-import cy.ac.ucy.cs.anyplace.lib.core.Algorithms
-import cy.ac.ucy.cs.anyplace.lib.core.LogRecord
-import cy.ac.ucy.cs.anyplace.lib.core.RadioMap
-import cy.ac.ucy.cs.anyplace.lib.utils.JsonHelper
-import cy.ac.ucy.cs.anyplace.lib.utils.Preferences
-import org.json.JSONException
-import org.json.JSONObject
-import java.awt.image.BufferedImage
-import java.io.*
-import java.util.*
-import javax.imageio.ImageIO
+package cy.ac.ucy.cs.anyplace.lib;
 
-class Anyplace {
-  enum class OS { Android, Unknown }
+import org.json.JSONException;
+import org.json.JSONObject;
 
-  companion object {
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
-    private fun setCache(c: String): cache=c;
+import javax.imageio.ImageIO;
 
-    fun Initialize(host: String, port: String?, cache: String) {
-      setCache(cache)
-      setHost(host)
-      port = port
-    }
-    fun Initialize(host: String, port: String?, cache: String, os: OS) {
-      setCache(cache)
-      setHost(host)
-      port = port
-      this.os = os
-    }
+import cy.ac.ucy.cs.anyplace.lib.core.Algorithms;
+import cy.ac.ucy.cs.anyplace.lib.core.LogRecord;
+import cy.ac.ucy.cs.anyplace.lib.core.RadioMap;
+import cy.ac.ucy.cs.anyplace.lib.utils.JsonHelper;
+import cy.ac.ucy.cs.anyplace.lib.utils.Preferences;
 
-    /**
-     * Gets the details of a specific Point Of Interest
-     *
-     * @param access_token The users access token (api key)
-     * @param pois         The POI that is being specified
-     * @return The response JSON as a String
-     */
-    fun poiDetails(access_token: String?, pois: String?): String {
-      val client = RestClient()
-      setPath("/anyplace/navigation/pois/id")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["pois"] = pois
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+public class Anyplace {
 
-    fun poiDetails(pois: String?): String {
-      return if (Companion.token!!.isEmpty() || Companion.token == null) {
-        JsonHelper.jsonResponse(STATUS_ERR, "{}")
-      } else poiDetails(
-        Companion.token,
-        pois
-      )
-    }
+enum OS {
+	Android,
+	Uknown
+}
 
-    /**
-     * Navigation instructions given from a given location to a POI.
-     *
-     * @param access_token   The users access token (api key)
-     * @param pois_to        The target POI
-     * @param buid           The building ID
-     * @param floor          The floor number
-     * @param coordinates_lat The latitude of position
-     * @param coordinates_lon The longitude of position
-     * @return A JSON in String form
-     */
-    fun navigationXY(
-      access_token: String?,
-      pois_to: String?,
-      buid: String?,
-      floor: String?,
-      coordinates_lat: String?,
-      coordinates_lon: String?
-    ): String {
-      val client = RestClient()
-      setPath("/anyplace/navigation/route_xy")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["pois_to"] = pois_to
-      params["buid"] = buid
-      params["floor_number"] = floor
-      params["coordinates_lat"] = coordinates_lat
-      params["coordinates_lon"] = coordinates_lon
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-        if (statusCode != 200) {
-          return JsonHelper.printError(Exception(), "navigationXY")
-        }
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "navigationXY")
-      }
-      return JsonHelper.jsonResponse(STATUS_OK, response)
-    }
+public static final int STATUS_OK = 0;
+public static final int STATUS_ERR = 1;
+private static String host;
+private static String path;
+private static String port;
+private static String cache;
+private static String token = null;
+private static OS os;
 
-    /**
-     * Navigation instructions given from a given location to a POI
-     *
-     * @param pois_to        The target POI
-     * @param buid           The building ID
-     * @param floor          The floor number
-     * @param coordinates_lat The latitude of position
-     * @param coordinates_lon The longitude of position
-     * @return A JSON in String form
-     */
-    fun navigationXY(
-      pois_to: String?,
-      buid: String?,
-      floor: String?,
-      coordinates_lat: String?,
-      coordinates_lon: String?
-    ): String {
-      return navigationXY(Companion.token, pois_to, buid, floor, coordinates_lat, coordinates_lon)
-    }
+public Anyplace(){
+	setCache(Preferences.getCache());
+	setHost(Preferences.getHost());
+	setPort(Preferences.getPort());
+	setToken(Preferences.getApiKey());
+}
 
-    /**
-     * Navigation instructions between 2 POIs.
-     *
-     * @param access_token The users access token (api key)
-     * @param pois_to      The target POI
-     * @param pois_from    The starting POI
-     * @return The navigation path in the form of a JSON string as sent by the
-     * server
-     */
-    fun navigationPoiToPoi(access_token: String?, pois_to: String?, pois_from: String?): String {
-      val client = RestClient()
-      setPath("/anyplace/navigation/route")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["pois_from"] = pois_from
-      params["pois_to"] = pois_to
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "navigationPoiToPoi")
-      }
-      return if (statusCode != 200) {
-        JsonHelper.printError(Exception(), "navigationPoiToPoi")
-      } else JsonHelper.jsonResponse(STATUS_OK, response)
-    }
+public Anyplace(String host, String port, String cache) {
+	setCache(cache);
+	setHost(host);
+	setPort(port);
+}
 
-    /**
-     * Navigation instructions between 2 POIs.
-     *
-     * @param pois_to      The target POI
-     * @param pois_from    The starting POI
-     * @return The navigation path in the form of a JSON string as sent by the
-     * server
-     */
-    fun navigationPoiToPoi(pois_to: String?, pois_from: String?): String {
-      return navigationPoiToPoi(Companion.token, pois_to, pois_from)
-    }
+public Anyplace(String host, String port, String cache, OS os) {
+	setCache(cache);
+	setHost(host);
+	setPort(port);
+	this.os = os;
+}
 
-    /**
-     * Get all annotated buildings
-     *
-     * @return The response JSON as a String
-     */
-    fun buildingAll(): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/building/all")
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(null, host, path))
-    }
+private static BufferedImage decodeToImage(String imageString) {
+	BufferedImage image = null;
+	byte[] imageByte;
+	try {
+		Base64.Decoder decoder = Base64.getDecoder();
+		imageByte = decoder.decode(imageString);
+		ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+		image = ImageIO.read(bis);
+		bis.close();
+	} catch (Exception e) {
+		e.printStackTrace();
 
-    /**
-     * Get all buildings for a campus
-     *
-     * @param cuid The campus ID
-     * @return JSON String response
-     */
-    fun buildingsByCampus(cuid: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/campus/all_cucode")
-      val params: MutableMap<String, String> = HashMap()
-      params["cuid"] = cuid
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	}
+	return image;
+}
 
-    /**
-     * Get all buildings with the same code
-     *
-     * @param bucode The building code
-     * @return JSON String response
-     */
-    fun buildingsByBuildingCode(bucode: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/building/all_bucode")
-      val params: MutableMap<String, String> = HashMap()
-      params["bucode"] = bucode
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+/**
+ * Gets the details of a specific Point Of Interest
+ *
+ * @param access_token The users access token (api key)
+ * @param pois         The POI that is being specified
+ * @return The response JSON as a String
+ */
+public String poiDetails(String access_token, String pois) {
+	RestClient client = new RestClient();
+	setPath("/anyplace/navigation/pois/id");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("pois", pois);
 
-    /**
-     * Get all nearby buildings - 50 meter radius
-     *
-     * @param access_token    The users access token (api key)
-     * @param coordinates_lat The latitude
-     * @param coordinates_lon The longitude
-     * @return Gives the JSON String response of the server
-     */
-    fun nearbyBuildings(
-      access_token: String?,
-      coordinates_lat: String?,
-      coordinates_lon: String?
-    ): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/building/coordinates")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["coordinates_lat"] = coordinates_lat
-      params["coordinates_lon"] = coordinates_lon
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()) );
+}
 
-    /**
-     * Get all nearby buildings - 50 meter radius
-     *
-     * @param coordinates_lat The latitude
-     * @param coordinates_lon The longitude
-     * @return Gives the JSON String response of the server
-     */
-    fun nearbyBuildings(coordinates_lat: String?, coordinates_lon: String?): String {
-      return nearbyBuildings(Companion.token, coordinates_lat, coordinates_lon)
-    }
+public String poiDetails(String pois){
+	if(token.isEmpty() || token == null){
+		return JsonHelper.jsonResponse(STATUS_ERR,"{}");
+	}
+	return poiDetails(token, pois);
 
-    /**
-     * Get all floors of a building
-     *
-     * @param buid Building ID
-     * @return A JSON String containing all the floors of the building
-     */
-    fun allBuildingFloors(buid: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/floor/all")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+}
 
-    /**
-     * Upload RSS log
-     *
-     * @param access_token Your access token
-     * @return A JSON String containing all the floors of the building
-     */
-    fun uploadRssLog(access_token: String?, rsslog: String?): String {
-      val file = File(rsslog)
-      val client = RestClient()
-      setPath("/anyplace/position/radio_upload")
-      val response = client.uploadFile(host, path, file, access_token)
-      return JsonHelper.jsonResponse(
-        if (response != null) STATUS_OK else STATUS_ERR,
-        response ?: "{\"message\":\"ERROR in Uploading RSS log\"}"
-      )
-    }
+/**
+ * Navigation instructions given from a given location to a POI.
+ *
+ * @param access_token   The users access token (api key)
+ * @param pois_to        The target POI
+ * @param buid           The building ID
+ * @param floor          The floor number
+ * @param coordinates_lat The latitude of position
+ * @param coordinates_lon The longitude of position
+ * @return A JSON in String form
+ */
+public String navigationXY(String access_token, String pois_to, String buid, String floor, String coordinates_lat,
+													 String coordinates_lon)  {
 
-    /**
-     * Get all POIs inside of a building
-     *
-     * @param buid The building ID
-     * @return JSON string with all the POIs in the building
-     */
-    fun allBuildingPOIs(buid: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/pois/all_building")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	RestClient client = new RestClient();
+	setPath("/anyplace/navigation/route_xy");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("pois_to", pois_to);
+	params.put("buid", buid);
+	params.put("floor_number", floor);
+	params.put("coordinates_lat", coordinates_lat);
+	params.put("coordinates_lon", coordinates_lon);
 
-    /**
-     * Get all POIs inside of a floor of a building
-     *
-     * @param buid  The building ID
-     * @param floor The floor number
-     * @return JSON String with all the POIs of a floor
-     */
-    fun allBuildingFloorPOIs(buid: String, floor: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/pois/all_floor")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      params["floor_number"] = floor
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	String response = client.doPost(params, getHost(), getPath());
 
-    /**
-     * Get all connections between POIs inside of a floor of a building
-     *
-     * @param buid  The building ID
-     * @param floor The floor number
-     * @return JSON String with all the connections in a floor
-     */
-    fun connectionsByFloor(buid: String, floor: String): String {
-      val client = RestClient()
-      setPath("/anyplace/mapping/connection/all_floor")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      params["floor_number"] = floor
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	JSONObject obj;
+	int statusCode;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+		if (statusCode != 200) {
+			return JsonHelper.printError(new Exception(), "navigationXY");
+		}
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "navigationXY");
+	}
 
-    /**
-     * Get all positions with their respective Wi-Fi radio measurements.
-     *
-     * @param buid  The building ID
-     * @param floor The floor number
-     * @return JSON String with the wifi intensities on a floor
-     */
-    fun radioheatMapBuildingFloor(buid: String, floor: String): String {
-      val client = RestClient()
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      params["floor"] = floor
-      setPath("/anyplace/mapping/radio/heatmap_building_floor")
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	return JsonHelper.jsonResponse(STATUS_OK, response);
 
-    /**
-     * Download the floor plan in base64 png format. It also stores the file locally
-     * as a png file
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor plan in a base64 format
-     */
-    fun floorplans(access_token: String, buid: String, floor: String, f: File?): String {
-      var output: OutputStream? = null
-      val client = RestClient()
-      setPath("/anyplace/floorplans64/$buid/$floor")
-      val params: MutableMap<String, String> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      try {
-        output = FileOutputStream(f)
-        output.write(response.toByteArray())
-        output.close()
-      } catch (e: Exception) {
-        return JsonHelper.printError(e, "floorplans")
-      }
-      return response
-    }
+}
 
-    /**
-     * Download the floor plan in base64 png format. It also stores the file locally
-     * as a png file
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor plan in a base64 format
-     */
-    fun floorplans64(access_token: String?, buid: String, floor: String): String {
-      val client = RestClient()
-      setPath("/anyplace/floorplans64/$buid/$floor")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      val filename = Companion.cache + buid + "/" + floor + "/" + "floorplan.png"
-      try {
-        val outputfile = File(filename)
-        ImageIO.write(decodeToImage(response), "png", outputfile)
-      } catch (e: Exception) {
-        return JsonHelper.printError(e, "floorplan64")
-      }
-      return JsonHelper.jsonResponse(STATUS_OK, response)
-    }
+/**
+ * Navigation instructions given from a given location to a POI
+ *
+ * @param pois_to        The target POI
+ * @param buid           The building ID
+ * @param floor          The floor number
+ * @param coordinates_lat The latitude of position
+ * @param coordinates_lon The longitude of position
+ * @return A JSON in String form
+ */
+public String navigationXY(String pois_to, String buid, String floor, String coordinates_lat, String coordinates_lon){
 
-    /**
-     * Download the floor plan in base64 png format. It also stores the file locally
-     * as a png file
-     *
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor plan in a base64 format
-     */
-    fun floorplans64(buid: String, floor: String): String {
-      return floorplans64(token, buid, floor)
-    }
+	return navigationXY(token, pois_to, buid, floor, coordinates_lat, coordinates_lon);
+}
 
-    /**
-     * Download the floor plan tiles in a zip file
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor tile zip download url
-     */
-    fun floortiles(access_token: String?, buid: String, floor: String): String {
-      val client = RestClient()
-      setPath("/anyplace/floortiles/$buid/$floor")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "floortiles")
-      }
-      if (statusCode == 200) {
-        val tiles_archive: String
-        tiles_archive = try {
-          obj.getString("tiles_archive")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "floortiles")
-        }
-        val zip = client.getFileWithGet(host, tiles_archive)
-        val filename = "res/$buid/$floor/floorPlanTiles.zip"
-        try {
-          val outputStream = FileOutputStream(filename)
-          outputStream.write(zip)
-          outputStream.close()
-        } catch (e: IOException) {
-          return JsonHelper.printError(e, "floortiles")
-        }
-      } else {
-        println("Bad response: $statusCode")
-        println(response)
-        return response
-      }
-      return JsonHelper.jsonResponse(STATUS_OK, response)
-    }
+/**
+ * Navigation instructions between 2 POIs.
+ *
+ * @param access_token The users access token (api key)
+ * @param pois_to      The target POI
+ * @param pois_from    The starting POI
+ * @return The navigation path in the form of a JSON string as sent by the
+ *         server
+ */
+public String navigationPoiToPoi(String access_token, String pois_to, String pois_from)  {
 
-    /**
-     * Download the floor plan tiles in a zip file
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor tile zip download url
-     */
-    fun floortilesByte(access_token: String, buid: String, floor: String): ByteArray? {
-      val client = RestClient()
-      setPath("/anyplace/floortiles/$buid/$floor")
-      val params: MutableMap<String, String> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-      } catch (e: JSONException) {
-        return null
-      }
-      if (statusCode == 200) {
-        val tiles_archive: String
-        tiles_archive = try {
-          obj.getString("tiles_archive")
-        } catch (e: JSONException) {
-          return null
-        }
-        return client.getFileWithGet(host, tiles_archive)
-      } else {
-        println("Bad response floortiles")
-      }
-      return null
-    }
+	RestClient client = new RestClient();
+	setPath("/anyplace/navigation/route");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("pois_from", pois_from);
+	params.put("pois_to", pois_to);
 
-    /**
-     * Download the floor plan tiles in a zip file
-     *
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String containing the floor tile zip download url
-     */
-    fun floortiles(buid: String, floor: String): String {
-      return floortiles(Companion.token, buid, floor)
-    }
+	String response = client.doPost(params, getHost(), getPath());
 
-    /**
-     * Radio map using all entries near the location
-     *
-     * @param access_token    The access token(api key)
-     * @param coordinates_lat Latitude
-     * @param coordinates_lon Longitude
-     * @param floor           The floor number
-     * @return JSON String with all the radio measurements of a floor
-     */
-    fun radioByCoordinatesFloor(
-      access_token: String?, coordinates_lat: String?, coordinates_lon: String?,
-      floor: String?
-    ): String {
-      val client = RestClient()
-      setPath("/anyplace/position/radio_download_floor")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["coordinates_lat"] = coordinates_lat
-      params["coordinates_lon"] = coordinates_lon
-      params["floor_number"] = floor
-      params["mode"] = "foo"
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	JSONObject obj ;
+	int statusCode ;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "navigationPoiToPoi");
+	}
 
-    /**
-     * Radio map using all entries near the location
-     *
-     * @param coordinates_lat Latitude
-     * @param coordinates_lon Longitude
-     * @param floor           The floor number
-     * @return JSON String with all the radio measurements of a floor
-     */
-    fun radioByCoordinatesFloor(
-      coordinates_lat: String?, coordinates_lon: String?,
-      floor: String?
-    ): String {
-      return radioByCoordinatesFloor(Companion.token, coordinates_lat, coordinates_lon, floor)
-    }
+	if (statusCode != 200) {
+		return JsonHelper.printError(new Exception(), "navigationPoiToPoi");
+	}
 
-    /**
-     * Get a radio map in a floor with a range
-     *
-     * @param buid            The building ID
-     * @param floor           The floor number
-     * @param coordinates_lat The Latitude
-     * @param coordinates_lon The Longitude
-     * @param range           The desired range
-     * @return JSON String with the radiomap measurements of the floor
-     */
-    fun radioByBuildingFloorRange(
-      buid: String, floor: String, coordinates_lat: String, coordinates_lon: String,
-      range: String
-    ): String {
-      val client = RestClient()
-      setPath("/anyplace/position/radio_by_floor_bbox")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      params["floor_number"] = floor
-      params["coordinates_lat"] = coordinates_lat
-      params["coordinates_lon"] = coordinates_lon
-      params["range"] = range
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+	return JsonHelper.jsonResponse(STATUS_OK, response);
+}
 
-    /**
-     * Radiomap using all the entries of an entire floor of a building. The
-     * measurements are also stored locally for use by estimatePositionOffline
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String with the radio measurement of the floor
-     */
-    fun radioByBuildingFloor(access_token: String?, buid: String, floor: String): String {
-      val client = RestClient()
-      setPath("/anyplace/position/radio_by_building_floor")
-      val params: MutableMap<String, String?> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "radioByBuildingFloor")
-      }
-      if (statusCode == 200) {
-        val map_url_parameters: String
-        map_url_parameters = try {
-          obj.getString("map_url_parameters")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "radioByBuildingFloor")
-        }
-        val parameters = client.getFileWithPost(host, map_url_parameters)
-        val map_url_mean: String
-        map_url_mean = try {
-          obj.getString("map_url_mean")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "radioByBuildingFloor")
-        }
-        val mean = client.getFileWithPost(host, map_url_mean)
-        val map_url_weights: String
-        map_url_weights = try {
-          obj.getString("map_url_weights")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "radioByBuildingFloor")
-        }
-        val weights = client.getFileWithPost(host, map_url_weights)
-        val temp = Companion.cache + buid + "/" + floor
-        val dir = File(temp)
-        val t = dir.mkdirs()
-        if (!t) {
-          return JsonHelper.printError(
-            AnyplaceException("Couldn't create directory.", Exception()),
-            "radioByBuildingFloor"
-          )
-        }
-        val indoor_radiomap_parameters =
-          Companion.cache + buid + "/" + floor + "/indoor_radiomap_parameters.txt"
-        val indoor_radiomap_mean = Companion.cache + buid + "/" + floor + "/indoor_radiomap_mean.txt"
-        val indoor_radiomap_weights =
-          Companion.cache + buid + "/" + floor + "/indoor_radiomap_weights.txt"
-        val f1 = File(indoor_radiomap_mean)
-        val f2 = File(indoor_radiomap_parameters)
-        val f3 = File(indoor_radiomap_weights)
-        try {
-          val t1 = f1.createNewFile()
-          val t2 = f2.createNewFile()
-          val t3 = f3.createNewFile()
-          if (!t1 || !t2 || !t3) {
-            return JsonHelper.printError(
-              AnyplaceException("Couldn't create file.", Exception()),
-              "radioByBuildingFloor"
-            )
-          }
-        } catch (e1: IOException) {
-          return JsonHelper.printError(e1, "radioByBuildingFloor")
-        }
-        try {
-          var outputStream = FileOutputStream(indoor_radiomap_parameters)
-          outputStream.write(parameters)
-          outputStream.close()
-          outputStream = FileOutputStream(indoor_radiomap_mean)
-          outputStream.write(mean)
-          outputStream.close()
-          outputStream = FileOutputStream(indoor_radiomap_weights)
-          outputStream.write(weights)
-          outputStream.close()
-        } catch (e: IOException) {
-          return JsonHelper.printError(e, "radioByBuildingFloor")
-        }
-      } else {
-        println("Bad response: $statusCode")
-        println(response)
-        return response
-      }
-      return JsonHelper.jsonResponse(STATUS_OK, response)
-    }
+/**
+ * Navigation instructions between 2 POIs.
+ *
+ * @param pois_to      The target POI
+ * @param pois_from    The starting POI
+ * @return The navigation path in the form of a JSON string as sent by the
+ *         server
+ */
+public String navigationPoiToPoi(String pois_to, String pois_from) {
+	return navigationPoiToPoi(token, pois_to, pois_from);
+}
 
-    /**
-     * Radiomap using all the entries of an entire floor of a building. The
-     * measurements are also stored locally for use by estimatePositionOffline
-     *
-     * @param access_token The access token(api key)
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String with the radio measurement of the floor
-     */
-    fun radiomapMeanByBuildingFloor(access_token: String, buid: String, floor: String): String {
-      val client = RestClient()
-      var res: String? = "Error"
-      setPath("/anyplace/position/radio_by_building_floor")
-      val params: MutableMap<String, String> = HashMap()
-      params["access_token"] = access_token
-      params["buid"] = buid
-      params["floor"] = floor
-      val response = client.doPost(params, host, path)
-      val obj: JSONObject
-      val statusCode: Int
-      try {
-        obj = JSONObject(response)
-        statusCode = obj.getInt("status_code")
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "radioByBuildingFloor")
-      }
-      if (statusCode == 200) {
-        val map_url_mean: String
-        map_url_mean = try {
-          obj.getString("map_url_mean")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "radioByBuildingFloor")
-        }
-        val mean = client.getFileWithPost(host, map_url_mean)
-        res = String(mean)
-      } else {
-        println(response)
-        return response
-      }
-      return res
-    }
+/**
+ * Get all annotated buildings
+ *
+ * @return The response JSON as a String
+ */
+public String buildingAll() {
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/building/all");
 
-    /**
-     * Radiomap using all the entries of an entire floor of a building. The
-     * measurements are also stored locally for use by estimatePositionOffline
-     *
-     * @param buid         The building ID
-     * @param floor        The floor number
-     * @return JSON String with the radio measurement of the floor
-     */
-    fun radioByBuildingFloor(buid: String, floor: String): String {
-      return radioByBuildingFloor(Companion.token, buid, floor)
-    }
+	return JsonHelper.jsonResponse(STATUS_OK,client.doPost(null, getHost(), getPath()));
 
-    /**
-     * Get an estimation on the user's position based on the APs.
-     *
-     * @param buid      The building ID
-     * @param floor     The floor number
-     * @param aps       A table of bssid and rss fingerprints in the form of a JSON
-     * @param algorithm The number of the desired algorithm
-     * @return JSON String containing the lat and lon
-     */
-    fun estimatePosition(
-      buid: String,
-      floor: String,
-      aps: Array<String?>,
-      algorithm: String
-    ): String {
-      val client = RestClient()
-      setPath("/anyplace/position/estimate_position")
-      val params: MutableMap<String, String> = HashMap()
-      params["buid"] = buid
-      params["floor"] = floor
-      val addb = "\\\"bssid\\\""
-      val addr = "\\\"rss\\\""
-      val addq = "\\\""
-      val apBuilder = StringBuilder("[")
-      for (s in aps) {
-        var obj: JSONObject
-        var bssid: String?
-        var rss: Int
-        try {
-          obj = JSONObject(s)
-          bssid = obj.getString("bssid")
-          rss = obj.getInt("rss")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "estimatePosition")
-        }
-        apBuilder.append("{").append(addb).append(":").append(addq).append(bssid).append(addq)
-            .append(",").append(addr).append(":").append(rss).append("},")
-      }
-      var ap = apBuilder.toString()
-      ap = ap.substring(0, ap.length - 1) + "]"
-      params["APs"] = ap
-      params["algorithm_choice"] = algorithm
-      return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, host, path))
-    }
+}
 
-    /**
-     * Get an estimation on the user's position based on the APs while offline.
-     * Needs the radiomap to be stored locally.
-     *
-     * @param buid      The building ID
-     * @param floor     The floor number
-     * @param aps       A table of bssid and rss fingerprints in the form of a JSON
-     * @param algorithm The number of the desired algorithm
-     * @return String with the lat and lon
-     */
-    fun estimatePositionOffline(
-      buid: String,
-      floor: String,
-      aps: Array<String?>,
-      algorithm: String
-    ): String {
-      val list = ArrayList<LogRecord>()
-      for (ap in aps) {
-        var obj: JSONObject
-        var bssid: String?
-        var rss: Int
-        try {
-          obj = JSONObject(ap)
-          bssid = obj.getString("bssid")
-          rss = obj.getInt("rss")
-        } catch (e: JSONException) {
-          return JsonHelper.printError(e, "estimatePositionOffline")
-        }
-        list.add(LogRecord(bssid, rss))
-      }
-      val al = algorithm.toInt()
-      val file = File(Companion.cache + buid + "/" + floor + "/indoor_radiomap_mean.txt")
-      val radio: RadioMap
-      radio = try {
-        RadioMap(file)
-      } catch (e: Exception) {
-        return JsonHelper.printError(e, "estimatePositionOffline")
-      }
-      val response = Algorithms.ProcessingAlgorithms(list, radio, al)
-      println(response)
-      var coords = arrayOfNulls<String>(0)
-      if (response != null) {
-        coords = response.split(" ".toRegex()).toTypedArray()
-      }
-      val r = JSONObject()
-      try {
-        r.put("status", STATUS_OK)
-        r.put("lon", coords[0])
-        r.put("lat", coords[1])
-      } catch (e: JSONException) {
-        return JsonHelper.printError(e, "estimatePositionOffline")
-      }
-      return r.toString()
-    }
+/**
+ * Get all buildings for a campus
+ *
+ * @param cuid The campus ID
+ * @return JSON String response
+ */
+public String buildingsByCampus(String cuid) {
 
-    val host: String?
-      get() = Companion.host
-    val cache: String?
-      get() = Companion.cache
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/campus/all_cucode");
+	Map<String, String> params = new HashMap<>();
+	params.put("cuid", cuid);
 
-    fun setHost(host: String) {
-      this.host = host
-    }
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
 
-    val path: String?
-      get() = Companion.path
+/**
+ * Get all buildings with the same code
+ *
+ * @param bucode The building code
+ * @return JSON String response
+ */
+public String buildingsByBuildingCode(String bucode) {
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/building/all_bucode");
+	Map<String, String> params = new HashMap<>();
+	params.put("bucode", bucode);
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
 
-    fun setPath(path: String) {
-      this.path = path
-    }
+/**
+ * Get all nearby buildings - 50 meter radius
+ *
+ * @param access_token    The users access token (api key)
+ * @param coordinates_lat The latitude
+ * @param coordinates_lon The longitude
+ * @return Gives the JSON String response of the server
+ */
+public String nearbyBuildings(String access_token, String coordinates_lat, String coordinates_lon) {
 
-    var port: String?
-      get() = Companion.port
-      set(p) {
-        Companion.port = p
-      }
-    val token: String?
-      get() = Companion.token
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/building/coordinates");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("coordinates_lat", coordinates_lat);
+	params.put("coordinates_lon", coordinates_lon);
 
-    fun setToken(token: String) {
-      this.token = token
-    }
 
-    const val STATUS_OK = 0
-    const val STATUS_ERR = 1
-    private val host: String? = null
-    private val path: String? = null
-    private var port: String? = null
-    private var cache: String? = null
-    private val token: String? = null
-    private val os: OS? = null
-    fun Initialize() {
-      setCache(Preferences.getCache())
-      setHost(Preferences.getHost())
-      setPort(Preferences.getPort())
-      setToken(Preferences.getApiKey())
-    }
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
 
-    private fun decodeToImage(imageString: String): BufferedImage? {
-      var image: BufferedImage? = null
-      val imageByte: ByteArray
-      try {
-        val decoder = Base64.getDecoder()
-        imageByte = decoder.decode(imageString)
-        val bis = ByteArrayInputStream(imageByte)
-        image = ImageIO.read(bis)
-        bis.close()
-      } catch (e: Exception) {
-        e.printStackTrace()
-      }
-      return image
-    }
-  }
+/**
+ * Get all nearby buildings - 50 meter radius
+ *
+ * @param coordinates_lat The latitude
+ * @param coordinates_lon The longitude
+ * @return Gives the JSON String response of the server
+ */
+public String nearbyBuildings(String coordinates_lat, String coordinates_lon){
+	return nearbyBuildings(token, coordinates_lat, coordinates_lon);
+}
+
+/**
+ * Get all floors of a building
+ *
+ * @param buid Building ID
+ * @return A JSON String containing all the floors of the building
+ */
+public String allBuildingFloors(String buid) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/floor/all");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+
+
+	return JsonHelper.jsonResponse(STATUS_OK,client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Upload RSS log
+ *
+ * @param access_token Your access token
+ * @return A JSON String containing all the floors of the building
+ */
+public String uploadRssLog(String access_token, String rsslog) {
+
+	File file = new File(rsslog);
+	RestClient client = new RestClient();
+	setPath("/anyplace/position/radio_upload");
+	String response =client.uploadFile( getHost(), getPath(), file, access_token );
+	return JsonHelper.jsonResponse(response !=null? STATUS_OK: STATUS_ERR, response != null? response: "{\"message\":\"ERROR in Uploading RSS log\"}");
+}
+
+
+
+/**
+ * Get all POIs inside of a building
+ *
+ * @param buid The building ID
+ * @return JSON string with all the POIs in the building
+ */
+public String allBuildingPOIs(String buid) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/pois/all_building");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Get all POIs inside of a floor of a building
+ *
+ * @param buid  The building ID
+ * @param floor The floor number
+ * @return JSON String with all the POIs of a floor
+ */
+public String allBuildingFloorPOIs(String buid, String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/pois/all_floor");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	params.put("floor_number", floor);
+
+
+
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Get all connections between POIs inside of a floor of a building
+ *
+ * @param buid  The building ID
+ * @param floor The floor number
+ * @return JSON String with all the connections in a floor
+ */
+public String connectionsByFloor(String buid, String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/mapping/connection/all_floor");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	params.put("floor_number", floor);
+
+
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Get all positions with their respective Wi-Fi radio measurements.
+ *
+ * @param buid  The building ID
+ * @param floor The floor number
+ * @return JSON String with the wifi intensities on a floor
+ */
+public String radioheatMapBuildingFloor(String buid, String floor) {
+
+	RestClient client = new RestClient();
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	params.put("floor", floor);
+	setPath("/anyplace/mapping/radio/heatmap_building_floor");
+
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+
+
+
+}
+/**
+ * Download the floor plan in base64 png format. It also stores the file locally
+ * as a png file
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor plan in a base64 format
+ */
+public String floorplans(String access_token, String buid, String floor, File f) {
+	OutputStream output = null;
+	RestClient client = new RestClient();
+	setPath("/anyplace/floorplans64/" + buid + "/" + floor);
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+
+
+	try {
+		output = new FileOutputStream(f);
+		output.write(response.getBytes());
+		output.close();
+	} catch (Exception e) {
+		return JsonHelper.printError(e, "floorplans");
+	}
+
+	return response;
+}
+
+/**
+ * Download the floor plan in base64 png format. It also stores the file locally
+ * as a png file
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor plan in a base64 format
+ */
+public String floorplans64(String access_token, String buid, String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/floorplans64/" + buid + "/" + floor);
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+	String filename = cache + buid + "/" + floor + "/" + "floorplan.png";
+
+	try {
+		File outputfile = new File(filename);
+		ImageIO.write(decodeToImage(response), "png", outputfile);
+	} catch (Exception e) {
+		return JsonHelper.printError(e, "floorplan64");
+	}
+
+	return JsonHelper.jsonResponse(STATUS_OK, response);
+}
+
+/**
+ * Download the floor plan in base64 png format. It also stores the file locally
+ * as a png file
+ *
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor plan in a base64 format
+ */
+public String floorplans64( String buid, String floor) {
+	return floorplans64(token, buid, floor);
+}
+
+/**
+ * Download the floor plan tiles in a zip file
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor tile zip download url
+ */
+public String floortiles(String access_token, String buid, String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/floortiles/" + buid + "/" + floor);
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+	JSONObject obj;
+	int statusCode;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "floortiles");
+	}
+
+	if (statusCode == 200) {
+		String tiles_archive;
+		try {
+			tiles_archive = obj.getString("tiles_archive");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "floortiles");
+		}
+		byte[] zip = client.getFileWithGet(getHost(), tiles_archive);
+		String filename = "res/" + buid + "/" + floor + "/" + "floorPlanTiles.zip";
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(filename);
+
+			outputStream.write(zip);
+			outputStream.close();
+		} catch (IOException e) {
+			return JsonHelper.printError(e, "floortiles");
+		}
+
+	} else {
+		System.out.println("Bad response: " + statusCode);
+		System.out.println(response);
+		return response;
+	}
+
+	return JsonHelper.jsonResponse(STATUS_OK, response);
+}
+
+/**
+ * Download the floor plan tiles in a zip file
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor tile zip download url
+ */
+public byte[] floortilesByte(String access_token, String buid, String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/floortiles/" + buid + "/" + floor);
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+	JSONObject obj;
+	int statusCode;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+	} catch (JSONException e) {
+		return null;
+	}
+
+	if (statusCode == 200) {
+		String tiles_archive;
+		try {
+			tiles_archive = obj.getString("tiles_archive");
+		} catch (JSONException e) {
+			return null;
+		}
+		byte[] zip = client.getFileWithGet(getHost(), tiles_archive);
+		return zip;
+
+
+	} else {
+		System.out.println("Bad response floortiles");
+	}
+
+	return null;
+}
+
+/**
+ * Download the floor plan tiles in a zip file
+ *
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String containing the floor tile zip download url
+ */
+public String floortiles( String buid, String floor){
+	return floortiles(token, buid, floor);
+}
+
+/**
+ * Radio map using all entries near the location
+ *
+ * @param access_token    The access token(api key)
+ * @param coordinates_lat Latitude
+ * @param coordinates_lon Longitude
+ * @param floor           The floor number
+ * @return JSON String with all the radio measurements of a floor
+ */
+public String radioByCoordinatesFloor(String access_token, String coordinates_lat, String coordinates_lon,
+																			String floor) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/position/radio_download_floor");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("coordinates_lat", coordinates_lat);
+	params.put("coordinates_lon", coordinates_lon);
+	params.put("floor_number", floor);
+	params.put("mode", "foo");
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+
+}
+
+/**
+ * Radio map using all entries near the location
+ *
+ * @param coordinates_lat Latitude
+ * @param coordinates_lon Longitude
+ * @param floor           The floor number
+ * @return JSON String with all the radio measurements of a floor
+ */
+public String radioByCoordinatesFloor(String coordinates_lat, String coordinates_lon,
+																			String floor){
+	return radioByCoordinatesFloor(token, coordinates_lat, coordinates_lon, floor);
+
+}
+
+/**
+ * Get a radio map in a floor with a range
+ *
+ * @param buid            The building ID
+ * @param floor           The floor number
+ * @param coordinates_lat The Latitude
+ * @param coordinates_lon The Longitude
+ * @param range           The desired range
+ * @return JSON String with the radiomap measurements of the floor
+ */
+public String radioByBuildingFloorRange(String buid, String floor, String coordinates_lat, String coordinates_lon,
+																				String range) {
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/position/radio_by_floor_bbox");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	params.put("floor_number", floor);
+	params.put("coordinates_lat", coordinates_lat);
+	params.put("coordinates_lon", coordinates_lon);
+	params.put("range", range);
+
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Radiomap using all the entries of an entire floor of a building. The
+ * measurements are also stored locally for use by estimatePositionOffline
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String with the radio measurement of the floor
+ */
+public String radioByBuildingFloor(String access_token, String buid, String floor){
+
+	RestClient client = new RestClient();
+	setPath("/anyplace/position/radio_by_building_floor");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+	JSONObject obj;
+	int statusCode;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "radioByBuildingFloor");
+	}
+
+	if (statusCode == 200) {
+		String map_url_parameters;
+		try {
+			map_url_parameters = obj.getString("map_url_parameters");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+		byte[] parameters = client.getFileWithPost(getHost(), map_url_parameters);
+		String map_url_mean ;
+		try {
+			map_url_mean = obj.getString("map_url_mean");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+		byte[] mean = client.getFileWithPost(getHost(), map_url_mean);
+		String map_url_weights ;
+		try {
+			map_url_weights = obj.getString("map_url_weights");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+		byte[] weights = client.getFileWithPost(getHost(), map_url_weights);
+
+		String temp = cache + buid + "/" + floor;
+		File dir = new File(temp);
+		boolean t = dir.mkdirs();
+		if (!t){
+			return JsonHelper.printError(new AnyplaceException("Couldn't create directory.", new Exception()), "radioByBuildingFloor");
+		}
+		String indoor_radiomap_parameters = cache + buid + "/" + floor + "/indoor_radiomap_parameters.txt";
+		String indoor_radiomap_mean = cache + buid + "/" + floor + "/indoor_radiomap_mean.txt";
+		String indoor_radiomap_weights = cache + buid + "/" + floor + "/indoor_radiomap_weights.txt";
+
+		File f1 = new File(indoor_radiomap_mean);
+		File f2 = new File(indoor_radiomap_parameters);
+		File f3 = new File(indoor_radiomap_weights);
+
+		try {
+			boolean t1 =f1.createNewFile();
+			boolean t2 =f2.createNewFile();
+			boolean t3 =f3.createNewFile();
+
+			if ( !t1 || !t2 || !t3){
+				return JsonHelper.printError(new AnyplaceException("Couldn't create file.", new Exception()), "radioByBuildingFloor");
+			}
+		} catch (IOException e1) {
+			return JsonHelper.printError(e1, "radioByBuildingFloor");
+		}
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(indoor_radiomap_parameters);
+			outputStream.write(parameters);
+			outputStream.close();
+
+			outputStream = new FileOutputStream(indoor_radiomap_mean);
+			outputStream.write(mean);
+			outputStream.close();
+
+			outputStream = new FileOutputStream(indoor_radiomap_weights);
+			outputStream.write(weights);
+			outputStream.close();
+		} catch (IOException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+
+	}
+	else {
+		System.out.println("Bad response: " + statusCode);
+		System.out.println(response);
+		return response;
+	}
+
+	return JsonHelper.jsonResponse(STATUS_OK, response);
+
+}
+
+/**
+ * Radiomap using all the entries of an entire floor of a building. The
+ * measurements are also stored locally for use by estimatePositionOffline
+ *
+ * @param access_token The access token(api key)
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String with the radio measurement of the floor
+ */
+public String radiomapMeanByBuildingFloor(String access_token, String buid, String floor){
+
+	RestClient client = new RestClient();
+	String res = "Error";
+	setPath("/anyplace/position/radio_by_building_floor");
+	Map<String, String> params = new HashMap<>();
+	params.put("access_token", access_token);
+	params.put("buid", buid);
+	params.put("floor", floor);
+
+	String response = client.doPost(params, getHost(), getPath());
+
+	JSONObject obj;
+	int statusCode;
+	try {
+		obj = new JSONObject(response);
+		statusCode = obj.getInt("status_code");
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "radioByBuildingFloor");
+	}
+
+	if (statusCode == 200) {
+		String map_url_mean ;
+		try {
+			map_url_mean = obj.getString("map_url_mean");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "radioByBuildingFloor");
+		}
+		byte[] mean = client.getFileWithPost(getHost(), map_url_mean);
+		res = new String(mean);
+	}
+	else {
+		System.out.println(response);
+		return response;
+	}
+
+	return res;
+}
+
+/**
+ * Radiomap using all the entries of an entire floor of a building. The
+ * measurements are also stored locally for use by estimatePositionOffline
+ *
+ * @param buid         The building ID
+ * @param floor        The floor number
+ * @return JSON String with the radio measurement of the floor
+ */
+public String radioByBuildingFloor( String buid, String floor) {
+
+	return radioByBuildingFloor(token, buid, floor);
+}
+
+/**
+ * Get an estimation on the user's position based on the APs.
+ *
+ * @param buid      The building ID
+ * @param floor     The floor number
+ * @param aps       A table of bssid and rss fingerprints in the form of a JSON
+ * @param algorithm The number of the desired algorithm
+ * @return JSON String containing the lat and lon
+ */
+public String estimatePosition(String buid, String floor, String[] aps, String algorithm)  {
+	RestClient client = new RestClient();
+	setPath("/anyplace/position/estimate_position");
+	Map<String, String> params = new HashMap<>();
+	params.put("buid", buid);
+	params.put("floor", floor);
+	String addb = "\\\"bssid\\\"";
+	String addr = "\\\"rss\\\"";
+	String addq = "\\\"";
+	StringBuilder apBuilder = new StringBuilder("[");
+	for (String s : aps) {
+
+
+		JSONObject obj;
+		String bssid;
+		int rss;
+		try {
+			obj = new JSONObject(s);
+			bssid = obj.getString("bssid");
+			rss = obj.getInt("rss");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "estimatePosition");
+		}
+
+		apBuilder.append("{").append(addb).append(":").append(addq).append(bssid).append(addq).append(",").append(addr).append(":").append(rss).append("},");
+
+	}
+	String ap = apBuilder.toString();
+	ap = ap.substring(0, ap.length() - 1) + "]";
+
+	params.put("APs", ap);
+	params.put("algorithm_choice", algorithm);
+
+
+
+	return JsonHelper.jsonResponse(STATUS_OK, client.doPost(params, getHost(), getPath()));
+}
+
+/**
+ * Get an estimation on the user's position based on the APs while offline.
+ * Needs the radiomap to be stored locally.
+ *
+ * @param buid      The building ID
+ * @param floor     The floor number
+ * @param aps       A table of bssid and rss fingerprints in the form of a JSON
+ * @param algorithm The number of the desired algorithm
+ * @return String with the lat and lon
+ */
+public String estimatePositionOffline(String buid, String floor, String[] aps, String algorithm)   {
+
+	ArrayList<LogRecord> list = new ArrayList<>();
+
+
+	for (String ap : aps) {
+
+		JSONObject obj;
+		String bssid;
+		int rss;
+		try {
+			obj = new JSONObject(ap);
+			bssid = obj.getString("bssid");
+			rss = obj.getInt("rss");
+		} catch (JSONException e) {
+			return JsonHelper.printError(e, "estimatePositionOffline");
+		}
+
+		list.add(new LogRecord(bssid, rss));
+	}
+
+	int al = Integer.parseInt(algorithm);
+	File file = new File(cache + buid + "/" + floor + "/indoor_radiomap_mean.txt");
+	RadioMap radio;
+	try {
+		radio = new RadioMap(file);
+
+	} catch (Exception e) {
+
+		return JsonHelper.printError(e, "estimatePositionOffline");
+
+
+	}
+
+
+	String response = Algorithms.ProcessingAlgorithms(list, radio, al);
+	System.out.println(response);
+	String[] coords = new String[0];
+	if (response != null) {
+		coords = response.split(" ");
+	}
+	JSONObject r = new JSONObject();
+	try {
+		r.put("status", STATUS_OK);
+		r.put("lon", coords[0]);
+		r.put("lat", coords[1]);
+	} catch (JSONException e) {
+		return JsonHelper.printError(e, "estimatePositionOffline");
+	}
+
+	return r.toString();
+
+}
+
+
+public String getHost() {
+	return host;
+}
+
+public String getCache() {
+	return cache;
+}
+
+public void setHost(String host) {
+	this.host = host;
+}
+
+public String getPath() {
+	return path;
+}
+
+public void setPath(String path) {
+	this.path = path;
+}
+
+public String getPort() {
+	return port;
+}
+
+public void setPort(String p) {
+	port = p;
+}
+
+private static void setCache(String c) { cache = c; }
+
+public String getToken() {
+	return token;
+}
+
+public void setToken(String token) {
+	this.token = token;
+}
 }
