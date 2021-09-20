@@ -40,6 +40,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import cy.ac.ucy.cs.anyplace.lib.core.LocDistance;
+import cy.ac.ucy.cs.anyplace.lib.core.LogRecord;
+import cy.ac.ucy.cs.anyplace.lib.core.RadioMap;
+
 public class Algorithms {
 
 	final static String K = "4";

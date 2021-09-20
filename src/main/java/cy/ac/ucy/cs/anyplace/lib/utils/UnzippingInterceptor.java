@@ -52,16 +52,8 @@ import okio.Okio;
 public class UnzippingInterceptor implements Interceptor {
 	@Override
 	public Response intercept(Chain chain) throws IOException {
-
-
-
 		Response response = chain.proceed(chain.request());
-
-
-
-
 		return unzip(response);
-
 	}
 
 	// copied from okhttp3.internal.http.HttpEngine (because is private)
@@ -75,7 +67,7 @@ public class UnzippingInterceptor implements Interceptor {
 
 		// this is used to decompress gzipped responses
 		if (contentEncoding != null && contentEncoding.equals("gzip")) {
-			Long contentLength = response.body().contentLength();
+			long contentLength = response.body().contentLength();
 			GzipSource responseBody = new GzipSource(response.body().source());
 			Headers strippedHeaders = response.headers().newBuilder().build();
 			return response.newBuilder().headers(strippedHeaders)
