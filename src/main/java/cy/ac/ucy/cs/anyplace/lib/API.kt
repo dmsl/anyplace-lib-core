@@ -12,7 +12,7 @@ interface API {
 
   // send an empty object in the body: {}
   @POST("/api/mapping/space/public")
-  suspend fun getSpaces(@Body body: Any = Object()): Response<Spaces>
+  suspend fun getSpacesPublic(@Body body: Any = Object()): Response<Spaces>
 
   @POST("/api/user/login")
   suspend fun userLoginLocal(@Body userLoginLocal: UserLoginLocalForm): Response<UserLoginResponse>
