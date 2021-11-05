@@ -87,6 +87,5 @@ public void testMacFingerprints() {
     
     response = client2.estimatePosition(buid, floor, aps, algorithm);
     //System.out.println(response + "\n");
-    
 }
 }

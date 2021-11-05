@@ -1,12 +1,12 @@
 package cy.ac.ucy.cs.anyplace.lib.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Space(
     @SerializedName("buid")
     val id: String,
-
+    @SerializedName("space_type")
+    val type: String,
     @SerializedName("bucode")
     val bucode: String,
     @SerializedName("name")

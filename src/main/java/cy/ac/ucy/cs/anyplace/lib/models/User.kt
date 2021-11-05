@@ -23,6 +23,7 @@ data class User(
     var photoUri: String
 )
 
+// TODO REQUEST
 data class UserLoginLocalForm(
     val username: String,
     val password: String)
