@@ -36,7 +36,7 @@
  *
  */
 
-package cy.ac.ucy.cs.anyplace.lib.utils;
+package cy.ac.ucy.cs.anyplace.lib.legacy.utils;
 
 import java.io.IOException;
 import java.util.Objects;

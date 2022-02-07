@@ -57,9 +57,11 @@ import javax.imageio.ImageIO;
 import cy.ac.ucy.cs.anyplace.lib.core.Algorithms;
 import cy.ac.ucy.cs.anyplace.lib.core.LogRecord;
 import cy.ac.ucy.cs.anyplace.lib.core.RadioMap;
-import cy.ac.ucy.cs.anyplace.lib.utils.JsonHelper;
+import cy.ac.ucy.cs.anyplace.lib.legacy.AnyplaceException;
+import cy.ac.ucy.cs.anyplace.lib.legacy.utils.JsonHelper;
 import cy.ac.ucy.cs.anyplace.lib.utils.Preferences;
 
+// TODO: Make this .kt and put default preferences here, in a companion object.
 public class Anyplace {
 
 enum OS {

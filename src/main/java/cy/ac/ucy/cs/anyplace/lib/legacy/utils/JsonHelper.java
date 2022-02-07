@@ -1,4 +1,4 @@
-package cy.ac.ucy.cs.anyplace.lib.utils;
+package cy.ac.ucy.cs.anyplace.lib.legacy.utils;
 
 import kotlin.reflect.KType;
 import org.json.JSONException;
