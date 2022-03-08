@@ -3,7 +3,8 @@ plugins {
     id 'kotlin'
     id 'maven-publish'  // JITPACK
     id 'kotlin-kapt'
-    // id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.0' Replace GSON?
+    // FUTURE: Replace GSON with KT Serialization. something like
+    // id 'org.jetbrains.kotlin.plugin.serialization' version '1.x.y'
 }
 
 group 'cy.ac.ucy.cs.anyplace.core'
@@ -15,50 +16,37 @@ repositories {
 }
 
 dependencies {
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib:$ver_kotlin"
-    // implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1" Replace GSON?
-
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
-    implementation 'com.squareup.okio:okio:2.8.0'
+    implementation 'com.squareup.okio:okio:2.10.0'
     implementation group: 'org.json', name: 'json', version: '20180813'
 
     // Dependency Injection
-    implementation 'com.google.dagger:dagger:2.36'
-    kapt 'com.google.dagger:dagger-compiler:2.36'
-    implementation 'com.google.dagger:hilt-core:2.36'
+    implementation 'com.google.dagger:dagger:2.40.5'
+    kapt 'com.google.dagger:dagger-compiler:2.40.5'
+    implementation 'com.google.dagger:hilt-core:2.40.5'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     // TESTING
-    //testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'junit:junit:4.13.2'
     testImplementation ('org.junit.jupiter:junit-jupiter:5.6.0')
 }
 
 // JAR library generation
-jar { manifest {
-    attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
-}
-//    from {
-//        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-//    }
+jar {
+    manifest {
+        attributes 'Main-Class': 'cy.ac.ucy.cs.anyplace.core.CLI'
+    }
+
     tasks.withType(Jar) {
-//        destinationDirectory = file("$rootDir/../bin/")
         destinationDirectory = file("$rootDir/artifact/")
         archiveFileName = "anyplace-core.jar"
     }
 }
 
-// Run cli task
-//task run_cli(type: JavaExec) {
-//    classpath sourceSets.main.runtimeClasspath
-//    main = "cy.ac.ucy.cs.anyplace.core.CLI"
-//    args "arg1", "arg2"
-//}
 test {
     useJUnit(){
         includeCategories 'Buildtests'
@@ -72,8 +60,14 @@ test {
     }
 }
 
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+
+// Run cli task
+//task run_cli(type: JavaExec) {
+//    classpath sourceSets.main.runtimeClasspath
+//    main = "cy.ac.ucy.cs.anyplace.core.CLI"
+//    args "arg1", "arg2"
+//}

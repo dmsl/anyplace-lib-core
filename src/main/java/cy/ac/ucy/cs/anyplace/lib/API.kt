@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
+/** Anyplace API */
 interface API {
   @GET("/api/version")
   suspend fun getVersion(): Response<Version>

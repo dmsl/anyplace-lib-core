@@ -1,6 +1,6 @@
 
-import cy.ac.ucy.cs.anyplace.lib.Anyplace;
-import org.junit.AfterClass;
+import cy.ac.ucy.cs.anyplace.lib.legacy.Anyplace;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

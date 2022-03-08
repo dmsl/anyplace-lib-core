@@ -1,6 +1,5 @@
 package cy.ac.ucy.cs.anyplace.lib.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class User(
@@ -23,7 +22,6 @@ data class User(
     var photoUri: String
 )
 
-// TODO REQUEST
 data class UserLoginLocalForm(
     val username: String,
     val password: String)

@@ -36,7 +36,7 @@
  *
  */
 
-package cy.ac.ucy.cs.anyplace.lib;
+package cy.ac.ucy.cs.anyplace.lib.legacy;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import cy.ac.ucy.cs.anyplace.lib.utils.Preferences;
 import cy.ac.ucy.cs.anyplace.lib.legacy.utils.UnzippingInterceptor;
 import okhttp3.*;
 

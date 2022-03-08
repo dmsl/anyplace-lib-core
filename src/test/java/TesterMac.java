@@ -3,8 +3,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 
-import cy.ac.ucy.cs.anyplace.lib.Anyplace;
-import cy.ac.ucy.cs.anyplace.lib.utils.Preferences;
+import cy.ac.ucy.cs.anyplace.lib.legacy.Anyplace;
+import cy.ac.ucy.cs.anyplace.lib.legacy.Preferences;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
