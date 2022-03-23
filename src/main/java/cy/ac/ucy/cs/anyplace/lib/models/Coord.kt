@@ -2,7 +2,6 @@ package cy.ac.ucy.cs.anyplace.lib.models
 
 import com.google.gson.annotations.SerializedName
 
-
 /**
  * [Coord] holds lat/lon as double.
  *
