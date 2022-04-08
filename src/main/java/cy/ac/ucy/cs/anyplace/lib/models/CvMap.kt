@@ -65,16 +65,3 @@ data class CvDetection(
   @SerializedName("ocr")
   val ocr: String? = null,
 )
-
-
-// LEFTHERE:
-// 1. materialize map and store to file
-// 2. inspect file
-// 3. read map, create detections again...
-// 4. parse it and place it on map
-// 5. TODO FUTURE: allow editing the map..
-
-// TODO PARSE CV MAP:
-// array of: locations x classes.size
-
-// HASHMAP: OCR: "class_location"
