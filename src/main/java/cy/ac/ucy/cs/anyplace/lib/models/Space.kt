@@ -27,3 +27,20 @@ data class Space(
     // @SerializedName("is_published")
     // val isPublished: String
 )
+
+
+/**
+ * Response containing with many spaces
+ */
+data class Spaces(
+  @SerializedName("spaces")
+  val spaces: List<Space>
+)
+
+/**
+ * Saving User Selections (LastVal) regarding a Space.
+ */
+data class LastValSpaces(
+  @SerializedName("lastFloor")
+  var lastFloor: String? = null
+)

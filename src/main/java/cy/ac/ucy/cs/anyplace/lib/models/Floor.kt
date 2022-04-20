@@ -32,3 +32,15 @@ data class Floor(
     @SerializedName("zoom")
     val zoom: String
 )
+
+/**
+ * Many floors in a response
+ */
+data class Floors(
+  @SerializedName("floors")
+  val floors: List<Floor>
+)
+
+// TODO:PMX: Req<Endpoint>
+// Request
+data class ReqFloorAll(val buid: String)
