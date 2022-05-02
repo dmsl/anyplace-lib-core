@@ -36,6 +36,10 @@ data class UserLocation(
   val timestr: String,
   @SerializedName("servertime")
   val servertime: String,
+
+  /** Timestamp of the last user msg*/
+  @SerializedName("msgts")
+  val lastMsgTime: Long,
 )
 
 
