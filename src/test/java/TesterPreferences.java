@@ -1,5 +1,5 @@
-import cy.ac.ucy.cs.anyplace.lib.legacy.Anyplace;
-import cy.ac.ucy.cs.anyplace.lib.legacy.Preferences;
+import cy.ac.ucy.cs.anyplace.lib.anyplace.legacy.Anyplace;
+import cy.ac.ucy.cs.anyplace.lib.anyplace.legacy.Preferences;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
