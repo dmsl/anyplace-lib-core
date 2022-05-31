@@ -46,22 +46,3 @@ data class CvLocation(
 )
 
 
-/**
- * Serialised Computer Vision Detection
- */
-data class CvDetection(
-  @SerializedName("detection")
-  val detection: String,
-
-  // CHECK in [NMS] method, that uses a heap to discard duplicate detections,
-  // we are considering the Width/Height of just the surviving detection
-  // NOTE: duplicates due to YOLO's internal design
-  @SerializedName("width")
-  val width: Float,
-  @SerializedName("height")
-  val height: Float,
-
-  /** Optical Character Recognition */
-  @SerializedName("ocr")
-  val ocr: String? = null,
-)

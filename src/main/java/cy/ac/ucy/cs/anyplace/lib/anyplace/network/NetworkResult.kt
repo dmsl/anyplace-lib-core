@@ -12,5 +12,5 @@ sealed class NetworkResult<T>(
   class Success<T> (data: T, message: String?=null) : NetworkResult<T>(data, message)
   class Error<T>(message: String?, data: T?= null): NetworkResult<T>(data, message)
   class Loading<T>: NetworkResult<T>()
-  class Unset<T>: NetworkResult<T>()
+  class Unset<T>(message: String?=null, data: T?= null): NetworkResult<T>(data, message)
 }

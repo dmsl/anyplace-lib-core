@@ -1,5 +1,7 @@
-package cy.ac.ucy.cs.anyplace.smas
+package cy.ac.ucy.cs.anyplace.lib.smas
 
+import cy.ac.ucy.cs.anyplace.lib.anyplace.models.FingerprintSendReq
+import cy.ac.ucy.cs.anyplace.lib.anyplace.models.FingerprintSendResp
 import cy.ac.ucy.cs.anyplace.lib.smas.models.*
 import retrofit2.Response
 import retrofit2.http.Body
@@ -31,6 +33,8 @@ interface ChatAPI {
   @POST("/smas/db-model-get.php")
   suspend fun cvModelsGet(@Body req: ChatUserAuth): Response<CvModelsResp>
 
+  @POST("/smas/fingerprint-send.php")
+  suspend fun cvFingerprintSend(@Body req: FingerprintSendReq): Response<FingerprintSendResp>
 }
 
 /** Authenticated ChatUser */
