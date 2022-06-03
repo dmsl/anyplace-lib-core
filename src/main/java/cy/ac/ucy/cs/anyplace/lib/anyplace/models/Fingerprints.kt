@@ -1,6 +1,5 @@
 package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
-
 import com.google.gson.annotations.SerializedName
 import cy.ac.ucy.cs.anyplace.lib.smas.models.ChatUser
 
@@ -63,7 +62,10 @@ data class CvDetectionREQ(
   val width: Double,
   @SerializedName("height")
   val height: Double,
-)
+) {
+  constructor(cvd: CvDetection) :
+      this(cvd.oid, cvd.width, cvd.height)
+}
 
 
 /**
