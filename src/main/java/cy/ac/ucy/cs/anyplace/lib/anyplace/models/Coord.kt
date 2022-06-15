@@ -11,8 +11,12 @@ data class Coord(
   @SerializedName("lat")
   val lat: Double,
   @SerializedName("lon")
-  val lon: Double) {
+  val lon: Double,
+  /** Floor or Deck */
+  @SerializedName("level")
+  val level: Int,
+  ) {
   companion object {
-    fun get(lat: String, lon: String) = Coord(lat.toDouble(), lon.toDouble())
+    fun get(lat: String, lon: String, level: Int) = Coord(lat.toDouble(), lon.toDouble(), level)
   }
 }
