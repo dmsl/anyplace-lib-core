@@ -36,7 +36,49 @@ data class FingerprintSendReq(
         uc.buid, uc.level, uc.lat, uc.lon,
         time,
         detections, modelId)
+
+  constructor(user: ChatUser, fe: FingerprintEntry):
+      this(user.uid, user.sessionkey,
+        fe.buid, fe.deck, fe.x, fe.y,
+        fe.time,
+        fe.cvDetections, fe.modelid)
+
 }
+
+/**
+ * Used for storing in file cache
+ * has X,Y,Z location, detections, and model
+ */
+data class FingerprintEntry(
+  // LOCATION:
+  @SerializedName("buid")
+  val buid: String,
+  @SerializedName("deck")
+  val deck: Int,
+  @SerializedName("x")
+  val x: Double,
+  @SerializedName("y")
+  val y: Double,
+
+  // TIME:
+  @SerializedName("time")
+  val time: String,
+
+  // DETECTIONS:
+  @SerializedName("cvDetections")
+  val cvDetections: List<CvDetectionREQ>,
+  @SerializedName("modelid")
+  val modelid: Int
+) {
+  constructor(uc: UserCoordinates, time: String,
+              detections: List<CvDetectionREQ>, modelId: Int):
+      this(uc.buid, uc.level, uc.lat, uc.lon,
+        time,
+        detections, modelId)
+}
+
+
+
 
 /** RESPONSE when sending a request */
 data class FingerprintSendResp(
