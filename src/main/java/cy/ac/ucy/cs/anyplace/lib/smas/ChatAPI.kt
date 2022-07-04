@@ -8,38 +8,39 @@ import cy.ac.ucy.cs.anyplace.lib.smas.models.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /** SMAS Chat API */
 interface ChatAPI {
 
-  @POST("/smas/version.php")
-  suspend fun version(@Body empty: Any = Object()): Response<ChatVersion>
+  @POST("/{path}/version.php")
+  suspend fun version(@Path("path") path: String, @Body empty: Any = Object()): Response<ChatVersion>
 
-  @POST("/smas/login.php")
-  suspend fun login(@Body req: ChatLoginReq): Response<ChatLoginResp>
+  @POST("/{path}/login.php")
+  suspend fun login(@Path("path") path: String, @Body req: ChatLoginReq): Response<ChatLoginResp>
 
-  @POST("/smas/location-get.php")
-  suspend fun locationGet(@Body req: ChatUserAuth): Response<UserLocations>
+  @POST("/{path}/location-get.php")
+  suspend fun locationGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<UserLocations>
 
-  @POST("/smas/location-send.php")
-  suspend fun locationSend(@Body req: LocationSendReq): Response<LocationSendResp>
+  @POST("/{path}/location-send.php")
+  suspend fun locationSend(@Path("path") path: String, @Body req: LocationSendReq): Response<LocationSendResp>
 
-  @POST("/smas/msg-get.php")
-  suspend fun messagesGet(@Body req: MsgGetReq): Response<ChatMsgsResp>
+  @POST("/{path}/msg-get.php")
+  suspend fun messagesGet(@Path("path") path: String, @Body req: MsgGetReq): Response<ChatMsgsResp>
 
-  @POST("/smas/msg-send.php")
-  suspend fun messageSend(@Body req: MsgSendReq): Response<MsgSendResp>
+  @POST("/{path}/msg-send.php")
+  suspend fun messageSend(@Path("path") path: String, @Body req: MsgSendReq): Response<MsgSendResp>
 
   // TODO fingerprint send?
 
-  @POST("/smas/db-model-get.php")
-  suspend fun cvModelsGet(@Body req: ChatUserAuth): Response<CvModelsResp>
+  @POST("/{path}/db-model-get.php")
+  suspend fun cvModelsGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvModelsResp>
 
-  @POST("/smas/fingerprint-send.php")
-  suspend fun cvFingerprintSend(@Body req: FingerprintSendReq): Response<FingerprintSendResp>
+  @POST("/{path}/fingerprint-send.php")
+  suspend fun cvFingerprintSend(@Path("path") path: String, @Body req: FingerprintSendReq): Response<FingerprintSendResp>
 
-  @POST("/smas/fingerprint-localize.php")
-  suspend fun cvLocalization(@Body req: CvLocalizationReq): Response<CvLocalizationResp>
+  @POST("/{path}/fingerprint-localize.php")
+  suspend fun cvLocalization(@Path("path") path: String, @Body req: CvLocalizationReq): Response<CvLocalizationResp>
 }
 
 /** Authenticated ChatUser */
