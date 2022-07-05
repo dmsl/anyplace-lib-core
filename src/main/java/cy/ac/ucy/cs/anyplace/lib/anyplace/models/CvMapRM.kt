@@ -1,12 +1,16 @@
 package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvDetection
 
 /**
  * Serialized Computer Vision Map of detections
- * It contains a list of [CvLocation]
+ * It contains a list of [CvLocationOLD]
+ *
+ * CLR:PM
  */
-data class CvMap(
+@Deprecated("Delete this")
+data class CvMapRM(
   /** The kind of model used while performing Object Detection.
    * Examples: vessel-model, ucy-model, coco */
   @SerializedName("detectionModel")
@@ -16,7 +20,7 @@ data class CvMap(
   @SerializedName("floor_number")
   val floorNumber: String,
   @SerializedName("cvMap")
-  val locations: List<CvLocation>,
+  val locationOLDS: List<CvLocationOLD>,
 
   // version number of the [CvMap].
   // All previous versions will be dropped
@@ -35,8 +39,10 @@ data class CvMap(
  * - latitude [lat]
  * - longitude [lon]
  * - and a list of [CvDetection]
+ * CLR:PM
  */
-data class CvLocation(
+@Deprecated("DELETE")
+data class CvLocationOLD(
   @SerializedName("lat")
   val lat: String,
   @SerializedName("lon")

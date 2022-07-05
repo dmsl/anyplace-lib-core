@@ -1,9 +1,9 @@
 package cy.ac.ucy.cs.anyplace.lib.smas
 
-import cy.ac.ucy.cs.anyplace.lib.anyplace.models.CvLocalizationReq
-import cy.ac.ucy.cs.anyplace.lib.anyplace.models.CvLocalizationResp
-import cy.ac.ucy.cs.anyplace.lib.anyplace.models.FingerprintSendReq
-import cy.ac.ucy.cs.anyplace.lib.anyplace.models.FingerprintSendResp
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizationReq
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizationResp
+import cy.ac.ucy.cs.anyplace.lib.smas.models.FingerprintSendReq
+import cy.ac.ucy.cs.anyplace.lib.smas.models.FingerprintSendResp
 import cy.ac.ucy.cs.anyplace.lib.smas.models.*
 import retrofit2.Response
 import retrofit2.http.Body
@@ -41,11 +41,15 @@ interface ChatAPI {
 
   @POST("/{path}/fingerprint-localize.php")
   suspend fun cvLocalization(@Path("path") path: String, @Body req: CvLocalizationReq): Response<CvLocalizationResp>
+
+
+  @POST("/{path}/db-fingerprint-get.php")
+  suspend fun cvMapGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvMapResp>
 }
 
 /** Authenticated ChatUser */
 data class ChatUserAuth(
-        val uid: String,
-        val sessionkey: String) {
+  val uid: String,
+  val sessionkey: String) {
   constructor(user: ChatUser) : this(user.uid, user.sessionkey)
 }

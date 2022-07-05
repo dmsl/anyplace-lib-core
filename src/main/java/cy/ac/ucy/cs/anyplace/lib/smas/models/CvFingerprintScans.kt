@@ -1,7 +1,7 @@
-package cy.ac.ucy.cs.anyplace.lib.anyplace.models
+package cy.ac.ucy.cs.anyplace.lib.smas.models
 
 import com.google.gson.annotations.SerializedName
-import cy.ac.ucy.cs.anyplace.lib.smas.models.ChatUser
+import cy.ac.ucy.cs.anyplace.lib.anyplace.models.UserCoordinates
 
 data class FingerprintSendReq(
   // USER:
@@ -37,7 +37,7 @@ data class FingerprintSendReq(
         time,
         detections, modelId)
 
-  constructor(user: ChatUser, fe: FingerprintEntry):
+  constructor(user: ChatUser, fe: FingerprintScanEntry):
       this(user.uid, user.sessionkey,
         fe.buid, fe.deck, fe.x, fe.y,
         fe.time,
@@ -49,7 +49,7 @@ data class FingerprintSendReq(
  * Used for storing in file cache
  * has X,Y,Z location, detections, and model
  */
-data class FingerprintEntry(
+data class FingerprintScanEntry(
   // LOCATION:
   @SerializedName("buid")
   val buid: String,
@@ -76,8 +76,6 @@ data class FingerprintEntry(
         time,
         detections, modelId)
 }
-
-
 
 
 /** RESPONSE when sending a request */
@@ -187,7 +185,7 @@ data class CvLocalization(
   @SerializedName("deck")
   val deck: Int,
   @SerializedName("dissimilarity")
-  val dissimilarity: Int,
+  val dissimilarity: Float,
   @SerializedName("flid")
   val flid: Int,
   @SerializedName("x")
