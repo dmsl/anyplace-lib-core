@@ -9,7 +9,7 @@ data class ChatMsg(
         @SerializedName("mid")
         val mid: String,
 
-        /** From [ChatUser] */
+        /** From [SmasUser] */
         @SerializedName("uid")
         val uid: String,
 
@@ -73,7 +73,7 @@ data class MsgGetReq(
         val sessionkey: String,
         val mgettype: Int = TP_GET_ALL,
         val from: String? ="") {
-  constructor(user: ChatUser, mgettype: Int = TP_GET_ALL, from: String?=null)
+  constructor(user: SmasUser, mgettype: Int = TP_GET_ALL, from: String?=null)
           : this(user.uid, user.sessionkey, mgettype, from)
 }
 
@@ -104,7 +104,7 @@ data class MsgSendReq(
         @SerializedName("y")
         val y: Double
 ){
-  constructor(user: ChatUser, userCoords: UserCoordinates, mdelivery: String, msg: String?, mtype: Int, mexten: String?, time: String) :
+  constructor(user: SmasUser, userCoords: UserCoordinates, mdelivery: String, msg: String?, mtype: Int, mexten: String?, time: String) :
           this(user.uid, user.sessionkey, userCoords.buid, userCoords.level, mdelivery, msg, mtype, mexten, time, userCoords.lat, userCoords.lon)
 }
 

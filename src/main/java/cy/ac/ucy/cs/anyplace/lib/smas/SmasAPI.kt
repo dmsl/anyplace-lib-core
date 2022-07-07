@@ -14,10 +14,10 @@ import retrofit2.http.Path
 interface ChatAPI {
 
   @POST("/{path}/version.php")
-  suspend fun version(@Path("path") path: String, @Body empty: Any = Object()): Response<ChatVersion>
+  suspend fun version(@Path("path") path: String, @Body empty: Any = Object()): Response<SmasVersion>
 
   @POST("/{path}/login.php")
-  suspend fun login(@Path("path") path: String, @Body req: ChatLoginReq): Response<ChatLoginResp>
+  suspend fun login(@Path("path") path: String, @Body req: SmasLoginReq): Response<SmasLoginResp>
 
   @POST("/{path}/location-get.php")
   suspend fun locationGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<UserLocations>
@@ -51,5 +51,5 @@ interface ChatAPI {
 data class ChatUserAuth(
   val uid: String,
   val sessionkey: String) {
-  constructor(user: ChatUser) : this(user.uid, user.sessionkey)
+  constructor(user: SmasUser) : this(user.uid, user.sessionkey)
 }

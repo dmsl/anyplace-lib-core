@@ -2,16 +2,16 @@ package cy.ac.ucy.cs.anyplace.lib.smas.models
 
 import com.google.gson.annotations.SerializedName
 
-data class ChatUser(
+data class SmasUser(
         val uid: String,
         val sessionkey: String,
         )
 
-data class ChatLoginReq(
+data class SmasLoginReq(
         val uid: String,
         val password: String)
 
-data class ChatLoginResp(
+data class SmasLoginResp(
         @SerializedName("descr")
         val descr: String?,
         // TODO:DZ: sessionid

@@ -13,6 +13,9 @@ data class CvMapResp(
   val descr: String,
 )
 
+/**
+ * This is the FINGERPRINT table
+ */
 data class CvMapRow(
   @SerializedName("foid")
   val foid: Int,

@@ -3,6 +3,9 @@ package cy.ac.ucy.cs.anyplace.lib.smas.models
 import com.google.gson.annotations.SerializedName
 import cy.ac.ucy.cs.anyplace.lib.anyplace.models.UserCoordinates
 
+/**
+ * Request for sending/uploading local fingerprints
+ */
 data class FingerprintSendReq(
   // USER:
   @SerializedName("uid")
@@ -24,20 +27,19 @@ data class FingerprintSendReq(
   @SerializedName("time")
   val time: String,
 
-  // DETECTIONS:
   @SerializedName("cvDetections")
   val cvDetections: List<CvDetectionREQ>,
   @SerializedName("modelid")
   val modelid: Int
 ) {
-  constructor(user: ChatUser, uc: UserCoordinates, time: String,
+  constructor(user: SmasUser, uc: UserCoordinates, time: String,
               detections: List<CvDetectionREQ>, modelId: Int):
       this(user.uid, user.sessionkey,
         uc.buid, uc.level, uc.lat, uc.lon,
         time,
         detections, modelId)
 
-  constructor(user: ChatUser, fe: FingerprintScanEntry):
+  constructor(user: SmasUser, fe: FingerprintScan):
       this(user.uid, user.sessionkey,
         fe.buid, fe.deck, fe.x, fe.y,
         fe.time,
@@ -46,10 +48,11 @@ data class FingerprintSendReq(
 }
 
 /**
+ * A local fingerprint scan
  * Used for storing in file cache
  * has X,Y,Z location, detections, and model
  */
-data class FingerprintScanEntry(
+data class FingerprintScan(
   // LOCATION:
   @SerializedName("buid")
   val buid: String,
@@ -78,7 +81,7 @@ data class FingerprintScanEntry(
 }
 
 
-/** RESPONSE when sending a request */
+/** RESPONSE when sending fingerprints */
 data class FingerprintSendResp(
   @SerializedName("rows")
   val rows: Int,
@@ -86,7 +89,7 @@ data class FingerprintSendResp(
   val status: String,
   @SerializedName("uid")
   val uid: String,
-  @SerializedName("descr") // CHECK:DZ
+  @SerializedName("descr")
   val descr: String,
 )
 
@@ -102,9 +105,11 @@ data class CvDetectionREQ(
   val width: Double,
   @SerializedName("height")
   val height: Double,
+  @SerializedName("ocr")
+  val ocr: String,
 ) {
   constructor(cvd: CvDetection) :
-      this(cvd.oid, cvd.width, cvd.height)
+      this(cvd.oid, cvd.width, cvd.height, cvd.ocr)
 }
 
 
@@ -155,7 +160,7 @@ data class CvLocalizationReq(
   @SerializedName("algorithm")
   val algorithm: Int,
 ) {
-  constructor(u: ChatUser, time: String,
+  constructor(u: SmasUser, time: String,
               buid: String, modelId: Int, cvds: List<CvDetectionREQ>, algorithm: Int):
       this(u.uid, u.sessionkey, time, buid, modelId, cvds, algorithm)
 }

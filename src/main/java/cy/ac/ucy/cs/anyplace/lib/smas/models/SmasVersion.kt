@@ -2,7 +2,7 @@ package cy.ac.ucy.cs.anyplace.lib.smas.models
 
 import com.google.gson.annotations.SerializedName
 
-data class ChatVersion(
+data class SmasVersion(
     @SerializedName("rows")
     val rows: Rows,
     @SerializedName("status")
