@@ -106,7 +106,7 @@ data class CvDetectionREQ(
   @SerializedName("height")
   val height: Double,
   @SerializedName("ocr")
-  val ocr: String,
+  val ocr: String?,
 ) {
   constructor(cvd: CvDetection) :
       this(cvd.oid, cvd.width, cvd.height, cvd.ocr)
@@ -134,7 +134,7 @@ data class CvDetection(
 
   /** Name of the detection class */
   @SerializedName("detection")
-  val detection: String?,
+  val detection: String,
 )
 
 
