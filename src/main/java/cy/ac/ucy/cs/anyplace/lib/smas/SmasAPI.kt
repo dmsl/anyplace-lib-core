@@ -1,7 +1,7 @@
 package cy.ac.ucy.cs.anyplace.lib.smas
 
-import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizationReq
-import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizationResp
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizeReq
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvLocalizeResp
 import cy.ac.ucy.cs.anyplace.lib.smas.models.FingerprintSendReq
 import cy.ac.ucy.cs.anyplace.lib.smas.models.FingerprintSendResp
 import cy.ac.ucy.cs.anyplace.lib.smas.models.*
@@ -40,11 +40,11 @@ interface ChatAPI {
   suspend fun cvFingerprintSend(@Path("path") path: String, @Body req: FingerprintSendReq): Response<FingerprintSendResp>
 
   @POST("/{path}/fingerprint-localize.php")
-  suspend fun cvLocalization(@Path("path") path: String, @Body req: CvLocalizationReq): Response<CvLocalizationResp>
+  suspend fun cvLocalization(@Path("path") path: String, @Body req: CvLocalizeReq): Response<CvLocalizeResp>
 
 
   @POST("/{path}/db-fingerprint-get.php")
-  suspend fun cvMapGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvMapResp>
+  suspend fun cvFingerprintGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvMapResp>
 }
 
 /** Authenticated ChatUser */

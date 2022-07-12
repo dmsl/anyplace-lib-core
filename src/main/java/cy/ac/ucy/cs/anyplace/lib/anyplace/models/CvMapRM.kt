@@ -1,7 +1,7 @@
 package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
-import cy.ac.ucy.cs.anyplace.lib.smas.models.CvDetection
+import cy.ac.ucy.cs.anyplace.lib.smas.models.CvObject
 
 /**
  * Serialized Computer Vision Map of detections
@@ -38,7 +38,7 @@ data class CvMapRM(
  * It contains:
  * - latitude [lat]
  * - longitude [lon]
- * - and a list of [CvDetection]
+ * - and a list of [CvObject]
  * CLR:PM
  */
 @Deprecated("DELETE")
@@ -48,7 +48,7 @@ data class CvLocationOLD(
   @SerializedName("lon")
   val lon: String,
   @SerializedName("cvDetections")
-  val detections: List<CvDetection>
+  val objects: List<CvObject>
 )
 
 

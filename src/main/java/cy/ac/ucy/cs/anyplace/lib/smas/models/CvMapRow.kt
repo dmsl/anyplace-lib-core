@@ -31,7 +31,6 @@ data class CvMapRow(
   @SerializedName("timestr")
   val timestr: String,
 
-
   @SerializedName("buid")
   val buid: String,
   @SerializedName("x")
@@ -52,7 +51,11 @@ data class CvMapRow(
 
   @SerializedName("height")
   val height: Double,
+
   @SerializedName("width")
   val width: Double,
+
+  @SerializedName("ocr")
+  val ocr: String?,
 )
 
