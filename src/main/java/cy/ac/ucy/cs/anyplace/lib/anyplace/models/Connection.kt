@@ -27,9 +27,9 @@ data class Connection(
     val weight: String
 )
 
-data class Connections(
+data class ConnectionsResp(
   @SerializedName("connections")
-  val connections: List<Connection>
+  val objs: List<Connection>
 )
 
 data class ReqSpaceConnections(

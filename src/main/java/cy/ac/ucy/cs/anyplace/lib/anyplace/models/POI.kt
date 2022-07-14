@@ -34,12 +34,12 @@ data class POI(
     val usernameCreator: Any
 )
 
-data class POIs(
+data class POIsResp(
   @SerializedName("pois")
-  val pois: List<POI>
+  val objs: List<POI>
 )
 
-data class ReqPOIs(
+data class ReqSpacePOIs(
   @SerializedName("buid")
   val buid: String
 )

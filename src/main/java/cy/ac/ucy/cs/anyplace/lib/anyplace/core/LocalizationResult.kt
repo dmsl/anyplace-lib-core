@@ -16,6 +16,12 @@ sealed class LocalizationResult(
   val message: String? = null,
   val details: String? = null) {
 
+  companion object {
+    const val MANUAL = "loc.manual"
+
+    fun isManual(lr: LocalizationResult) = lr.details != null && lr.details == MANUAL
+  }
+
   class Success(coord: Coord, details: String?=null) : LocalizationResult(coord=coord, details=details)
   class Error(msg: String, details: String?=null): LocalizationResult(message=msg, details=details)
   class Unset: LocalizationResult()
