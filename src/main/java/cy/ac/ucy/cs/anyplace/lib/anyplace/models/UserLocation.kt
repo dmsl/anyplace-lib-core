@@ -42,6 +42,8 @@ data class UserLocation(
   val lastMsgTime: Long,
 )
 
+// extension function
+fun UserLocation.toCoord() = Coord(x, y, deck)
 
 /** A location in a space:
  * - Space ID

@@ -153,10 +153,10 @@ object CONSTchatMsg {
   const val MDELIVERY_KNN = 3
   const val MDELIVERY_BBOX= 4
 
-  const val TP_SEND_TXT = 1
-  const val TP_SEND_IMG= 2
-  const val TP_SEND_LOCATION= 3
-  const val TP_SEND_4= 4 // TODO:DZ was alert. now unused.
+  const val MTYPE_TXT = 1
+  const val MTYPE_IMG= 2
+  const val MTYPE_LOCATION= 3
+  const val MTYPE_ALERT= 4
 
   const val STP_TXT = "txt"
   const val STP_IMG= "img"
