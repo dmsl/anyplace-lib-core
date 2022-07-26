@@ -121,6 +121,9 @@ data class MsgSendResp(
         val descr: String?,
         @SerializedName("uid")
         val uid: String,
+        /** what delivery type was requested */
+        @SerializedName("mdelivery")
+        val mdelivery: Int,
         /** How many users it has reached */
         @SerializedName("rows")
         val deliveredTo: Int?,
@@ -145,6 +148,11 @@ object CONSTchatMsg {
   /** Get messages from a particular timestamp onwards */
   const val TP_GET_FROM=3
 
+  const val MDELIVERY_ALL = 1
+  const val MDELIVERY_SAME_DECK = 2
+  const val MDELIVERY_KNN = 3
+  const val MDELIVERY_BBOX= 4
+
   const val TP_SEND_TXT = 1
   const val TP_SEND_IMG= 2
   const val TP_SEND_LOCATION= 3
@@ -154,4 +162,14 @@ object CONSTchatMsg {
   const val STP_IMG= "img"
   const val STP_LOCATION= "loc" // TODO Alert is better as a flag.
   const val STP_TP4= "tp4"
+
+  fun prettyMDelivery(mdelivery: Int) : String {
+    return when (mdelivery) {
+      MDELIVERY_ALL -> "all users"
+      MDELIVERY_SAME_DECK -> "same deck"
+      MDELIVERY_KNN -> "nearest users"
+      MDELIVERY_BBOX-> "bounding box"
+      else -> "<invalid>"
+    }
+  }
 }
