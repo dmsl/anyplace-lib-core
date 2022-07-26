@@ -77,6 +77,9 @@ data class MsgGetReq(
           : this(user.uid, user.sessionkey, mgettype, from)
 }
 
+/**
+ * Message Send Request
+ */
 data class MsgSendReq(
         // [ChatUser]
         @SerializedName("uid")
@@ -108,6 +111,9 @@ data class MsgSendReq(
           this(user.uid, user.sessionkey, userCoords.buid, userCoords.level, mdelivery, msg, mtype, mexten, time, userCoords.lat, userCoords.lon)
 }
 
+/**
+ * Response for [MsgSendReq]
+ */
 data class MsgSendResp(
         @SerializedName("status")
         val status: String,
@@ -115,10 +121,12 @@ data class MsgSendResp(
         val descr: String?,
         @SerializedName("uid")
         val uid: String,
-        /** TODO:DZ rename this maybe?
-         * How many users it has reached */
+        /** How many users it has reached */
         @SerializedName("rows")
-        val deliveredTo: Int?
+        val deliveredTo: Int?,
+        /** The level (deck or floor) this was delivered to */
+        @SerializedName("deck")
+        val level: Int?
 )
 
 /**

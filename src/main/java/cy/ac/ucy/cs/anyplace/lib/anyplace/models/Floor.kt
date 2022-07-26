@@ -41,6 +41,5 @@ data class Floors(
   val floors: List<Floor>
 )
 
-// TODO:PMX: Req<Endpoint>
 // Request
 data class ReqFloorAll(val buid: String)
