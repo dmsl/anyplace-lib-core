@@ -4,11 +4,11 @@ import cy.ac.ucy.cs.anyplace.lib.anyplace.models.Coord
 
 
 enum class LocalizationMethod {
-  cvEngine,       // set by the Computer Vision engine
-  manualByUser,   // forced by the user (most likely w/ a long-click)
-  autoMostRecent  // auto-set to last, recent location (with some bounds on recency)
+  cvEngine,        // set by the Computer Vision engine
+  manualByUser,    // forced by the user (most likely w/ a long-click)
+  autoMostRecent,  // auto-set to last, recent location (with some bounds on recency)
+  NA               // NotApplicable: localization method is only for own user's location
 }
-
 
 /**
  * Sets [coord] when a location is found, and error [message] when not.
