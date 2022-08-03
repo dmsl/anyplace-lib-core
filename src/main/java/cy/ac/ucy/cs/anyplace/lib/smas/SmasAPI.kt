@@ -31,10 +31,12 @@ interface ChatAPI {
   @POST("/{path}/msg-send.php")
   suspend fun messageSend(@Path("path") path: String, @Body req: MsgSendReq): Response<MsgSendResp>
 
-  // TODO fingerprint send?
-
   @POST("/{path}/db-model-get.php")
   suspend fun cvModelsGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvModelsResp>
+
+  // /model-files-get.php
+  @POST("/{path}/model-files-get.php")
+  suspend fun cvModelFilesGet(@Path("path") path: String, @Body req: CvModelFilesReq): Response<CvModelFilesResp>
 
   @POST("/{path}/fingerprint-send.php")
   suspend fun cvFingerprintSend(@Path("path") path: String, @Body req: FingerprintSendReq): Response<FingerprintSendResp>
@@ -44,7 +46,7 @@ interface ChatAPI {
 
 
   @POST("/{path}/db-fingerprint-get.php")
-  suspend fun cvFingerprintGet(@Path("path") path: String, @Body req: ChatUserAuth): Response<CvMapResp>
+  suspend fun cvFingerprintGet(@Path("path") path: String, @Body req: CvFingerprintReq): Response<CvFingerprintResp>
 }
 
 /** Authenticated ChatUser */

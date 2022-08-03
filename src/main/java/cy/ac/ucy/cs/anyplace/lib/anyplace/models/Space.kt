@@ -3,24 +3,35 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 import com.google.gson.annotations.SerializedName
 
 data class Space(
-    @SerializedName("buid")
-    val id: String,
-    @SerializedName("space_type")
+  /** ID of the space.
+   * - buid: used to stand for building unique id
+   */
+  @SerializedName("buid")
+    val buid: String,
+  /** type: vessel or buildign */
+  @SerializedName("space_type")
     val type: String,
-    @SerializedName("bucode")
+  /** some buildigns have a code name too (like a manually asigned id) */
+  @SerializedName("bucode")
     val bucode: String,
-    @SerializedName("name")
+  /** Name of the building */
+  @SerializedName("name")
     val name: String,
-    @SerializedName("description")
+  /** Description of the building */
+  @SerializedName("description")
     val description: String,
-    @SerializedName("address")
+  @SerializedName("address")
     val address: String,
-    @SerializedName("coordinates_lat")
+  @SerializedName("coordinates_lat")
     val coordinatesLat: String,
-    @SerializedName("coordinates_lon")
+  @SerializedName("coordinates_lon")
     val coordinatesLon: String,
-    @SerializedName("url")
+  @SerializedName("url")
     val url: String,
+
+  /** this is done locally */
+    @SerializedName("ownerShip")
+    val ownerShip: String?=null,
 
     // @SerializedName("username_creator")
     // val usernameCreator: String,

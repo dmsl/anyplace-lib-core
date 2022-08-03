@@ -3,10 +3,7 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace
 import cy.ac.ucy.cs.anyplace.lib.anyplace.models.*
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 /** Anyplace API */
 interface API {
@@ -14,11 +11,6 @@ interface API {
   /** Get the Anyplace backend version */
   @GET("/api/version")
   suspend fun getVersion(): Response<Version>
-
-  // FLOORS TODO IMPLEMENT + BIND
-  /** Get all floors of a space */
-  @POST("api/mapping/floor/all")
-  suspend fun floorAll(@Body req: ReqFloorAll): Response<Floors>
 
   /** Get the floorplan of the given floor in base64
    *
@@ -34,23 +26,29 @@ interface API {
   @POST("/api/mapping/pois/space/all")
   suspend fun poisSpaceAll(@Body req: ReqSpacePOIs): Response<POIsResp>
 
+  @POST("/api/mapping/space/get")
+  suspend fun space(@Body req: ReqSpaceId): Response<Space>
+
+  /** Get all floors of a space */
+  @POST("api/mapping/floor/all")
+  suspend fun floors(@Body req: ReqSpaceId): Response<Levels>
+
   @POST("/api/mapping/connection/floors/all")
-  suspend fun connectionsSpaceAll(@Body req: ReqSpaceConnections): Response<ConnectionsResp>
-
-
-
-
-
-
-
-  // DEMO CODE:
-  // send an empty object in the body: {}
-  @POST("/api/mapping/space/public")
-  suspend fun getSpacesPublic(@Body body: Any = Object()): Response<Spaces>
+  suspend fun connectionsSpaceAll(@Body req: ReqSpaceId): Response<ConnectionsResp>
 
   @POST("/api/user/login")
   suspend fun userLoginLocal(@Body userLoginLocal: UserLoginLocalForm): Response<UserLoginResponse>
 
   @POST("/api/user/login/google")
   suspend fun userLoginGoogle(@Body userLogin: UserLoginGoogleData): Response<UserLoginResponse>
+
+  @POST("/api/auth/mapping/space/user")
+  suspend fun getSpacesUser(@Header("access_token") token: String, @Body body: Any = Object()): Response<Spaces>
+
+  @POST("/api/auth/mapping/space/accessible")
+  suspend fun getSpacesAccessible(@Header("access_token") token: String, @Body body: Any = Object()): Response<Spaces>
+
+  @POST("/api/mapping/space/public")
+  suspend fun getSpacesPublic(@Body body: Any = Object()): Response<Spaces>
+
 }

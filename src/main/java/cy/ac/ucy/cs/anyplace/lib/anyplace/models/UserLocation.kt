@@ -20,7 +20,7 @@ data class UserLocation(
   @SerializedName("buid")
   val buid: String,
   @SerializedName("deck")
-  val deck: Int,
+  val level: Int,
 
   /** Latitude */
   @SerializedName("x")
@@ -43,7 +43,7 @@ data class UserLocation(
 )
 
 // extension function
-fun UserLocation.toCoord() = Coord(x, y, deck)
+fun UserLocation.toCoord() = Coord(x, y, level)
 
 /** A location in a space:
  * - Space ID

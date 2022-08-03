@@ -17,7 +17,7 @@ data class FingerprintSendReq(
   @SerializedName("buid")
   val buid: String,
   @SerializedName("deck")
-  val deck: Int,
+  val level: Int,
   @SerializedName("x")
   val x: Double,
   @SerializedName("y")
@@ -41,7 +41,7 @@ data class FingerprintSendReq(
 
   constructor(user: SmasUser, fe: FingerprintScan):
       this(user.uid, user.sessionkey,
-        fe.buid, fe.deck, fe.x, fe.y,
+        fe.buid, fe.level, fe.x, fe.y,
         fe.time,
         fe.cvDetections, fe.modelid)
 
@@ -57,7 +57,7 @@ data class FingerprintScan(
   @SerializedName("buid")
   val buid: String,
   @SerializedName("deck")
-  val deck: Int,
+  val level: Int,
   @SerializedName("x")
   val x: Double,
   @SerializedName("y")
@@ -119,9 +119,6 @@ data class CvObject(
   @SerializedName("oid")
   val oid: Int,
 
-  // CHECK in [NMS] method, that uses a heap to discard duplicate detections,
-  // we are considering the Width/Height of just the surviving detection
-  // NOTE: duplicates due to YOLO's internal design
   @SerializedName("width")
   val width: Double,
   @SerializedName("height")
@@ -142,7 +139,7 @@ data class CvObject(
  */
 data class CvLocation(
   @SerializedName("deck")
-  val deck: Int,
+  val level: Int,
   @SerializedName("dissimilarity")
   val dissimilarity: Float,
   @SerializedName("flid")

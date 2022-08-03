@@ -24,7 +24,7 @@ data class CvLocalizeReq(
   val cvDetections: List<CvObjectReq>,
 
   @SerializedName("algorithm")
-  val algorithm: Int,
+  val algorithm: Int?,
 
   /** Optional: might be used to improve localization algo */
   @SerializedName("prevX")
@@ -39,15 +39,19 @@ data class CvLocalizeReq(
    */
   @SerializedName("prevDeck")
   val prevDeck: Int?=null,
-
-) {
+  ) {
   constructor(u: SmasUser, time: String,
-              buid: String, modelId: Int, cvds: List<CvObjectReq>, algorithm: Int, prevCoord: Coord):
+              buid: String, modelId: Int, cvds: List<CvObjectReq>, algorithm: Int?, prevCoord: Coord?):
       this(u.uid, u.sessionkey, time, buid, modelId, cvds, algorithm,
-        prevCoord.lat, prevCoord.lon, prevCoord.level)
+        prevCoord?.lat, prevCoord?.lon, prevCoord?.level)
+
   constructor(u: SmasUser, time: String,
-              buid: String, modelId: Int, cvds: List<CvObjectReq>, algorithm: Int):
+              buid: String, modelId: Int, cvds: List<CvObjectReq>, algorithm: Int?):
       this(u.uid, u.sessionkey, time, buid, modelId, cvds, algorithm)
+
+  constructor(u: SmasUser, time: String,
+              buid: String, modelId: Int, cvds: List<CvObjectReq>):
+      this(u.uid, u.sessionkey, time, buid, modelId, cvds, null)
 
 }
 
@@ -64,7 +68,11 @@ data class CvLocalizeResp(
   @SerializedName("rows")
   val rows: List<CvLocation>,
   @SerializedName("status")
-  val status: String,
+  var status: String,
   @SerializedName("descr")
   val descr: String?=null,
+  @SerializedName("sql_time_msec")
+  val sql_time_msec: String?=null,
+  @SerializedName("algorithm")
+  val algorithm: String?=null,
 )

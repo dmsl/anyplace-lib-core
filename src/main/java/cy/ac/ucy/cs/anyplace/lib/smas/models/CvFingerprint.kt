@@ -2,9 +2,22 @@ package cy.ac.ucy.cs.anyplace.lib.smas.models
 
 import com.google.gson.annotations.SerializedName
 
-data class CvMapResp(
+
+/** Request for getting a CvFingerprint */
+data class CvFingerprintReq(
+  val uid: String,
+  val sessionkey: String,
+  val modelid: Int,
+  val buid: String,
+  val from: Long) {
+  constructor(user: SmasUser, modelid: Int, buid: String, from: Long=0) :
+      this(user.uid, user.sessionkey, modelid, buid, from)
+}
+
+
+data class CvFingerprintResp(
   @SerializedName("rows")
-  val rows: List<CvMapRow>,
+  val rows: List<CvFingerprintRow>,
   @SerializedName("status")
   val status: String,
   @SerializedName("uid")
@@ -13,10 +26,11 @@ data class CvMapResp(
   val descr: String,
 )
 
+
 /**
- * This is the FINGERPRINT table
+ * This is a row of the FINGERPRINT table
  */
-data class CvMapRow(
+data class CvFingerprintRow(
   @SerializedName("foid")
   val foid: Int,
 
@@ -38,7 +52,7 @@ data class CvMapRow(
   @SerializedName("y")
   val y: Double,
   @SerializedName("deck")
-  val deck: Int,
+  val level: Int,
 
   @SerializedName("modelid")
   val modelid: Int,

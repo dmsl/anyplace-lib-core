@@ -32,7 +32,7 @@ data class ConnectionsResp(
   val objs: List<Connection>
 )
 
-data class ReqSpaceConnections(
+data class ReqSpaceId(
   @SerializedName("buid")
   val buid: String
 )

@@ -2,7 +2,10 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
 
-data class User(
+/**
+ * Logged-in Anyplace User
+ */
+data class UserAP(
     @SerializedName("access_token")
     val accessToken: String,
     @SerializedName("owner_id")

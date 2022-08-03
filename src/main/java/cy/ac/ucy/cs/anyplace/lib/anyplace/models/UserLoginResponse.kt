@@ -6,12 +6,12 @@ import com.google.gson.annotations.SerializedName
  * Same response for the Anyplace login and Google login
  */
 data class UserLoginResponse(
-    @SerializedName("message")
+  @SerializedName("message")
     val message: String,
-    @SerializedName("status")
+  @SerializedName("status")
     val status: String,
-    @SerializedName("status_code")
+  @SerializedName("status_code")
     val statusCode: Int,
-    @SerializedName("user")
-    val user: User,
+  @SerializedName("user")
+    val userAP: UserAP,
 )
