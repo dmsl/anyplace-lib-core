@@ -3,6 +3,9 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * A POI on anyplace
+ */
 data class POI(
   @SerializedName("buid")
     val buid: String,
@@ -33,12 +36,13 @@ data class POI(
   @SerializedName("username_creator")
     val usernameCreator: Any
 )
-
+/** Reponse */
 data class POIsResp(
   @SerializedName("pois")
   val objs: List<POI>
 )
 
+/** Request */
 data class ReqSpacePOIs(
   @SerializedName("buid")
   val buid: String

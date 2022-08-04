@@ -2,6 +2,9 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * A Connection on Anyplace
+ */
 data class Connection(
     @SerializedName("buid")
     val buid: String,
@@ -27,11 +30,17 @@ data class Connection(
     val weight: String
 )
 
+/**
+ * Response object
+ */
 data class ConnectionsResp(
   @SerializedName("connections")
   val objs: List<Connection>
 )
 
+/**
+ * Request
+ */
 data class ReqSpaceId(
   @SerializedName("buid")
   val buid: String

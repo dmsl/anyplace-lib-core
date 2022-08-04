@@ -3,10 +3,9 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 import com.google.gson.annotations.SerializedName
 
 /**
- * Rename this to Level
- *
  * Level:
  * - some times referred to as: floor, or deck
+ * - it's a floor or a deck
  */
 data class Level(
   @SerializedName("fuid")

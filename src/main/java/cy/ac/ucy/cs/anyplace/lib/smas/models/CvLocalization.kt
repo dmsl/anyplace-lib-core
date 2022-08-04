@@ -55,8 +55,6 @@ data class CvLocalizeReq(
 
 }
 
-
-
 /**
  * Response after asking the backend for a user's locations.
  *

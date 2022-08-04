@@ -2,7 +2,6 @@ package cy.ac.ucy.cs.anyplace.lib.smas.models
 
 import com.google.gson.annotations.SerializedName
 
-
 /*
  * FOR REQUESTS: Only needs a [ChatUserAuth]
  * Response for CvModels (from remote DB that cotains oids, cid, etc; [CvModelClass])

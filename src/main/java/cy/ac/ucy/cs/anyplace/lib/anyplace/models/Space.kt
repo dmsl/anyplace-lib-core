@@ -2,6 +2,10 @@ package cy.ac.ucy.cs.anyplace.lib.anyplace.models
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * A Space on Anyplace
+ * - can be a vessel or a building..
+ */
 data class Space(
   /** ID of the space.
    * - buid: used to stand for building unique id
