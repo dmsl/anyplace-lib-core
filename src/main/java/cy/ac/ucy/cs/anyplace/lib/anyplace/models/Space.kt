@@ -11,36 +11,36 @@ data class Space(
    * - buid: used to stand for building unique id
    */
   @SerializedName("buid")
-    val buid: String,
+  val buid: String,
   /** type: vessel or buildign */
   @SerializedName("space_type")
-    val type: String,
-  /** some buildigns have a code name too (like a manually asigned id) */
+  val type: String,
+  /** some buildings have a code name too (like a manually assigned id) */
   @SerializedName("bucode")
-    val bucode: String,
+  val bucode: String?,
   /** Name of the building */
   @SerializedName("name")
-    val name: String,
+  val name: String,
   /** Description of the building */
   @SerializedName("description")
-    val description: String,
+  val description: String,
   @SerializedName("address")
-    val address: String,
+  val address: String,
   @SerializedName("coordinates_lat")
-    val coordinatesLat: String,
+  val coordinatesLat: String,
   @SerializedName("coordinates_lon")
-    val coordinatesLon: String,
+  val coordinatesLon: String,
   @SerializedName("url")
-    val url: String,
+  val url: String,
 
   /** this is done locally */
-    @SerializedName("ownerShip")
-    val ownerShip: String?=null,
+  @SerializedName("ownerShip")
+  val ownerShip: String?=null,
 
-    // @SerializedName("username_creator")
-    // val usernameCreator: String,
-    // @SerializedName("is_published")
-    // val isPublished: String
+  // @SerializedName("username_creator")
+  // val usernameCreator: String,
+  // @SerializedName("is_published")
+  // val isPublished: String
 )
 
 
