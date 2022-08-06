@@ -12,7 +12,7 @@ data class Space(
    */
   @SerializedName("buid")
   val buid: String,
-  /** type: vessel or buildign */
+  /** type: vessel or building */
   @SerializedName("space_type")
   val type: String,
   /** some buildings have a code name too (like a manually assigned id) */
